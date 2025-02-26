@@ -51,6 +51,12 @@ export default function Home() {
               My blog
             </Link>
           </Button>
+
+          <Button variant="outline" className="w-full" asChild>
+            <Link href="https://buymeacoffee.com/rumjahn">
+              Buy me a coffee
+            </Link>
+          </Button>
         </div>
 
         <div className="flex justify-center gap-6 pb-8">
