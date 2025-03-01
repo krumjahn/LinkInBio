@@ -78,11 +78,15 @@ export default function ViralBlogTitleGenerator() {
       const lines = contentWithoutIntro.split('\n').filter(line => line.trim() !== '')
       const titles: string[] = []
       
+      // First, try to find lines with the expected format
       for (const line of lines) {
         // Look for lines that contain a whisper in parentheses
         if (line.includes('(') && line.includes(')')) {
           // Clean the title first
           let cleanedLine = cleanTitle(line)
+          
+          // Remove any quotes around the entire line
+          cleanedLine = cleanedLine.replace(/^["'](.*)["']$/g, '$1')
           
           // Remove whisper type labels from the parenthetical part
           // This regex looks for patterns like "Trust Whisper:", "Obstacle Whisper:", etc. inside parentheses
@@ -97,17 +101,60 @@ export default function ViralBlogTitleGenerator() {
         if (titles.length === 4) break
       }
       
-      // If we couldn't extract exactly 4 titles, use the first 4 non-empty lines
-      if (titles.length !== 4) {
-        return lines.slice(0, 4).map(line => {
-          let cleanedLine = cleanTitle(line)
-          cleanedLine = cleanedLine.replace(/\(\s*(Trust|Obstacle|Benefit|Outcome)\s*Whisper\s*:?\s*/i, '(')
-          cleanedLine = cleanedLine.replace(/\)\s*[-–—]?\s*\**\s*(Trust|Obstacle|Benefit|Outcome)\s*Whisper\s*\**\s*$/i, ')')
-          return cleanedLine
-        })
+      // If we couldn't extract titles with parentheses, try to find lines with whisper type labels
+      if (titles.length < 4) {
+        const whisperTypes = ['Trust Whisper', 'Obstacle Whisper', 'Benefit Whisper', 'Outcome Whisper']
+        const typeTitles: string[] = []
+        
+        for (const type of whisperTypes) {
+          for (const line of lines) {
+            if (line.includes(type)) {
+              // Extract the title part after the whisper type
+              const match = line.match(new RegExp(`${type}[:\\s-]*\\s*["']?([^"']*)["']?`, 'i'))
+              if (match && match[1]) {
+                let title = match[1].trim()
+                
+                // If the title doesn't have parentheses, add them with the appropriate whisper
+                if (!title.includes('(')) {
+                  if (type === 'Trust Whisper') {
+                    title = `${blogTitle} (Written By AI Experts)`
+                  } else if (type === 'Obstacle Whisper') {
+                    title = `${blogTitle} (Without Any Coding Experience)`
+                  } else if (type === 'Benefit Whisper') {
+                    title = `${blogTitle} (And How To Solve It)`
+                  } else if (type === 'Outcome Whisper') {
+                    title = `${blogTitle} (And Start Earning $250,000 Per Year In Your Sweatpants)`
+                  }
+                }
+                
+                typeTitles.push(title)
+                break
+              }
+            }
+          }
+        }
+        
+        // Add any titles we found
+        titles.push(...typeTitles)
       }
       
-      return titles
+      // If we still don't have 4 titles, use fallback titles
+      if (titles.length < 4) {
+        const fallbackTitles = [
+          `${blogTitle} (Written By AI Experts)`,
+          `${blogTitle} (Without Any Coding Experience)`,
+          `${blogTitle} (And How To Solve It)`,
+          `${blogTitle} (And Start Earning $250,000 Per Year In Your Sweatpants)`
+        ]
+        
+        // Add only the missing titles
+        for (let i = titles.length; i < 4; i++) {
+          titles.push(fallbackTitles[i])
+        }
+      }
+      
+      // Ensure we only return 4 titles
+      return titles.slice(0, 4)
     } catch (err) {
       console.error('Error parsing whisper titles:', err)
       // Fallback to default titles if parsing fails
@@ -200,16 +247,21 @@ The things you can "whisper" are:
 - A "and so you can achieve this outcome too" sentence
 
 For example:
-- Trust Whisper = "Written By A Twitter Creator With 100k Followers"
-- Obstacle Whisper = "Without Spending Any Money On Ads"
-- Benefit Whisper = "And How To Solve It"
-- Outcome Whisper = "And Start Earning $250,000 Per Year In Your Sweatpants"
+- Trust Whisper: How to Grow Your Email List (Written By AI Experts)
+- Obstacle Whisper: How to Grow Your Email List (Without Any Coding Experience)
+- Benefit Whisper: How to Grow Your Email List (And How To Solve It)
+- Outcome Whisper: How to Grow Your Email List (And Start Earning $250,000 Per Year In Your Sweatpants)
 
 I will give you a headline and you will create 4 new headlines using the "Whisper Technique," one for each type of whisper.
 
 My headline is: "${blogTitle}"
 
-Please generate 4 headlines, one for each type of whisper. Format each headline as the original headline followed by the whisper in parentheses.`
+Please generate 4 headlines, one for each type of whisper. Format each headline as the original headline followed by the whisper in parentheses. DO NOT use quotes around the headlines. DO NOT include the whisper type in the parentheses.
+
+For the Trust Whisper, please use "(Written By AI Experts)" as the whisper.
+For the Obstacle Whisper, please use "(Without Any Coding Experience)" as the whisper.
+For the Benefit Whisper, please use "(And How To Solve It)" as the whisper.
+For the Outcome Whisper, please use "(And Start Earning $250,000 Per Year In Your Sweatpants)" as the whisper.`
 
         const content = await generateTitlesWithAI(prompt)
         titles = parseWhisperTitles(content)
