@@ -57,6 +57,12 @@ export default function Home() {
               Buy me a coffee
             </Link>
           </Button>
+
+          <Button variant="outline" className="w-full" asChild>
+            <Link href="/viral-blog-title-generator">
+              Viral Blog Title Generator
+            </Link>
+          </Button>
         </div>
 
         <div className="flex justify-center gap-6 pb-8">
