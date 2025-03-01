@@ -6,7 +6,7 @@ import { Card } from "../../../components/ui/card"
 import Link from "next/link"
 import axios from 'axios'
 
-type TitleFormat = 'whisper' | 'hormozi' | 'specific';
+type TitleFormat = 'whisper' | 'hormozi' | 'specific' | 'tangible';
 
 // OpenRouter API configuration
 const OPENROUTER_API_KEY = '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'
@@ -194,6 +194,83 @@ export default function ViralBlogTitleGenerator() {
     }
   }
 
+  const parseTangibleTitles = (content: string): string[] => {
+    try {
+      // Remove any introductory text
+      const contentWithoutIntro = content.replace(/^(here are|here's|i've created|i have created).*?\n/i, '')
+      
+      // Extract titles from the AI response
+      const lines = contentWithoutIntro.split('\n').filter(line => line.trim() !== '')
+      
+      // Filter out lines that are not actual titles
+      const filteredLines = lines.filter(line => {
+        const lowerLine = line.toLowerCase();
+        
+        // Skip lines that are analysis, headers, or explanatory text
+        return !(
+          lowerLine.startsWith('##') || 
+          lowerLine.startsWith('intangible:') || 
+          lowerLine.startsWith('intangible pieces:') ||
+          lowerLine.startsWith('tangible headlines:') ||
+          lowerLine.includes('this is a broad') ||
+          lowerLine.includes('this implies') ||
+          lowerLine.includes('doesn\'t specify') ||
+          lowerLine.includes('analysis:') ||
+          lowerLine.includes('action + result') ||
+          lowerLine.includes('generic financial outcome') ||
+          lowerLine.includes('somewhat tangible') ||
+          lowerLine.includes('lacks specifics')
+        );
+      });
+      
+      // Look for actual tangible titles - these are typically complete sentences with specific metrics
+      const titles = filteredLines
+        .filter(line => {
+          // Keep lines that have numbers (likely to be tangible metrics)
+          // or specific time periods or concrete outcomes
+          return (
+            /\d/.test(line) || // Has numbers
+            /per (day|week|month|year)/.test(line.toLowerCase()) || // Has time periods
+            /(increase|boost|grow|earn|make|build|create|generate|launch|sell)/.test(line.toLowerCase()) // Has action verbs
+          );
+        })
+        .map(line => {
+          // If the line starts with "Tangible:", remove it
+          let cleanedLine = line.replace(/^tangible:\s*/i, '').trim();
+          
+          // Remove explanatory text in parentheses at the end of the title
+          cleanedLine = cleanedLine.replace(/\s*\([^)]*?(specific|income|goal|timeframe|monetization|method|target|valuation|ai tool)[^)]*?\)$/i, '');
+          
+          return cleanedLine;
+        })
+        .slice(0, 5) // Take up to 5 titles
+        .map(line => cleanTitle(line));
+      
+      // If we couldn't find any good titles, use fallbacks
+      if (titles.length === 0) {
+        return [
+          `Earn $500 per month writing creative content with ${blogTitle}`,
+          `Generate 50 new leads in 30 days using ${blogTitle}`,
+          `Build a portfolio of 10 client projects in 90 days with ${blogTitle}`,
+          `Create 3 passive income streams worth $1,000/month with ${blogTitle}`,
+          `Launch your first digital product that earns $2,000 in its first week using ${blogTitle}`
+        ];
+      }
+      
+      return titles;
+    } catch (err) {
+      console.error('Error parsing tangible titles:', err)
+      // Fallback to default titles if parsing fails
+      return [
+        `Increase Your ${blogTitle} Revenue by $10,000 in 90 Days`,
+        `Build a ${blogTitle} System That Generates 50 Leads per Week`,
+        `Create Your First ${blogTitle} in 30 Days or Less`,
+        `Reduce Your ${blogTitle} Workload by 15 Hours per Week`,
+        `Transform Your ${blogTitle} Strategy and Close 3x More Deals This Quarter`
+      ]
+    }
+  }
+
   const parseHormoziTitles = (content: string): string[] => {
     try {
       // Remove any introductory text
@@ -314,6 +391,43 @@ Please generate 7 headlines using the "How to (YAA) without (BOO) even if (Great
 
         const content = await generateTitlesWithAI(prompt)
         titles = parseHormoziTitles(content)
+      } else if (titleFormat === 'tangible') {
+        prompt = `I am going to give you a headline and I want you to make it "TANGIBLE."
+
+Your task is to transform intangible problems, benefits, or outcomes into TANGIBLE problems, benefits, or outcomes.
+
+TANGIBLE problems, benefits, and outcomes are noun-oriented ("...to buy your first $1 million house")
+
+Intangible problems, benefits, and outcomes are adjective-oriented ("...to live happily ever after").
+
+For example:
+Intangible: Make more money
+Tangible: Make $2,000 in your first month of freelancing
+
+Intangible: Fall in love
+Tangible: Fall in love in your early 20s and reduce your risk of divorce by 35%
+
+Intangible: Have a fulfilling career
+Tangible: Have a career you are proud to talk about around the dinner table
+
+Intangible: Get into real estate
+Tangible: Buy your first single-family rental property within 6 months
+
+Intangible: Become a pro email marketer
+Tangible: Increase the open rate of your emails by 78%
+
+My headline is: "${blogTitle}"
+
+Please generate 5 tangible headlines based on this topic. Make each headline unique with different tangible elements.
+
+IMPORTANT: 
+1. Do NOT include any analysis or explanations in parentheses after the titles
+2. Do NOT include phrases like "(Action + Result)" or "(Generic financial outcome)"
+3. Only provide the actual tangible headlines, nothing else
+4. Each headline should include specific numbers, timeframes, or measurable outcomes`
+
+        const content = await generateTitlesWithAI(prompt)
+        titles = parseTangibleTitles(content)
       } else if (titleFormat === 'specific') {
         prompt = `I am going to give you a headline and I want you to make more specific.
 
@@ -414,6 +528,15 @@ IMPORTANT: Do NOT start the headlines with the audience name followed by a colon
                 />
                 <span>Specific Format</span>
               </label>
+              <label className="flex items-center space-x-2 cursor-pointer mb-2">
+                <input
+                  type="radio"
+                  checked={titleFormat === 'tangible'}
+                  onChange={() => setTitleFormat('tangible')}
+                  className="form-radio"
+                />
+                <span>Tangible Format</span>
+              </label>
             </div>
           </div>
 
@@ -460,6 +583,21 @@ IMPORTANT: Do NOT start the headlines with the audience name followed by a colon
                 />
               </div>
             </div>
+          ) : titleFormat === 'tangible' ? (
+            // Single input field for Tangible Format
+            <div>
+              <label htmlFor="blogTitle" className="block text-sm font-medium mb-1">
+                Enter your headline or topic
+              </label>
+              <input
+                id="blogTitle"
+                type="text"
+                value={blogTitle}
+                onChange={(e) => setBlogTitle(e.target.value)}
+                placeholder="e.g., Make more money with email marketing"
+                className="w-full p-2 border rounded-md"
+              />
+            </div>
           ) : (
             // Single input field for Whisper and Hormozi formats
             <div>
@@ -484,7 +622,8 @@ IMPORTANT: Do NOT start the headlines with the audience name followed by a colon
           <Button 
             onClick={generateTitles} 
             disabled={
-              (titleFormat === 'specific' ? (!blogTitle.trim() || !audience.trim() || !promise.trim()) : !blogTitle.trim()) 
+              (titleFormat === 'specific' ? (!blogTitle.trim() || !audience.trim() || !promise.trim()) : 
+               titleFormat === 'tangible' ? !blogTitle.trim() : !blogTitle.trim()) 
               || isLoading
             }
             className="w-full"
@@ -595,6 +734,26 @@ IMPORTANT: Do NOT start the headlines with the audience name followed by a colon
                     </div>
                   </div>
                 ))
+              ) : titleFormat === 'tangible' ? (
+                // Tangible Format titles
+                generatedTitles.map((title, index) => (
+                  <div key={index} className="p-4 bg-gray-50 rounded-md">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="font-medium text-sm text-gray-500 mb-1">Tangible Title {index + 1}</h3>
+                        <p className="text-lg">{title}</p>
+                      </div>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={() => copyToClipboard(title)}
+                        className="ml-2 flex-shrink-0"
+                      >
+                        Copy
+                      </Button>
+                    </div>
+                  </div>
+                ))
               ) : (
                 // Specific Format titles
                 generatedTitles.map((title, index) => (
@@ -641,6 +800,21 @@ IMPORTANT: Do NOT start the headlines with the audience name followed by a colon
               <li><strong>Greatest Obstacle:</strong> A significant challenge that might prevent success</li>
             </ul>
             <p className="mt-2">This format creates highly clickable titles by addressing the goal, removing a common objection, and acknowledging a major obstacle.</p>
+          </div>
+        ) : titleFormat === 'tangible' ? (
+          <div className="mt-8 text-sm text-gray-500">
+            <h3 className="font-medium mb-2">About the "Tangible Format":</h3>
+            <p>The Tangible Format transforms vague, intangible concepts into specific, measurable outcomes:</p>
+            <ul className="list-disc pl-5 mt-2 space-y-1">
+              <li><strong>Intangible:</strong> Adjective-oriented, vague outcomes (e.g., "Make more money")</li>
+              <li><strong>Tangible:</strong> Noun-oriented, specific outcomes (e.g., "Make $2,000 in your first month")</li>
+            </ul>
+            <p className="mt-2">Examples of transformations:</p>
+            <ul className="list-disc pl-5 mt-2 space-y-1">
+              <li>Intangible: "Have a fulfilling career" → Tangible: "Have a career you are proud to talk about around the dinner table"</li>
+              <li>Intangible: "Become a pro email marketer" → Tangible: "Increase the open rate of your emails by 78%"</li>
+            </ul>
+            <p className="mt-2">Tangible headlines are more compelling because they provide concrete, measurable outcomes that readers can visualize and aspire to achieve.</p>
           </div>
         ) : (
           <div className="mt-8 text-sm text-gray-500">
