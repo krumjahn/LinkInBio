@@ -6,7 +6,7 @@ import { Card } from "../../../components/ui/card"
 import Link from "next/link"
 import axios from 'axios'
 
-type TitleFormat = 'whisper' | 'hormozi';
+type TitleFormat = 'whisper' | 'hormozi' | 'specific';
 
 // OpenRouter API configuration
 const OPENROUTER_API_KEY = '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'
@@ -14,6 +14,8 @@ const MODEL = 'google/gemma-2-9b-it:free'
 
 export default function ViralBlogTitleGenerator() {
   const [blogTitle, setBlogTitle] = useState('')
+  const [audience, setAudience] = useState('')
+  const [promise, setPromise] = useState('')
   const [generatedTitles, setGeneratedTitles] = useState<string[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [titleFormat, setTitleFormat] = useState<TitleFormat>('whisper')
@@ -167,6 +169,31 @@ export default function ViralBlogTitleGenerator() {
     }
   }
 
+  const parseSpecificTitles = (content: string): string[] => {
+    try {
+      // Remove any introductory text
+      const contentWithoutIntro = content.replace(/^(here are|here's|i've created|i have created).*?\n/i, '')
+      
+      // Extract titles from the AI response
+      const lines = contentWithoutIntro.split('\n').filter(line => line.trim() !== '')
+      
+      // Clean up the titles and take the first 5
+      const titles = lines.slice(0, 5).map(line => cleanTitle(line))
+      
+      return titles
+    } catch (err) {
+      console.error('Error parsing specific titles:', err)
+      // Fallback to default titles if parsing fails
+      return [
+        `6 Tips For ${blogTitle} To Get Promoted In Their First 30 Days`,
+        `The Ultimate Guide To ${blogTitle} For Beginners In 2025`,
+        `How ${blogTitle} Can Increase Productivity By 50% In Just One Week`,
+        `Why Most ${blogTitle} Fail And How To Avoid Their Mistakes`,
+        `${blogTitle}: The Complete Step-By-Step Blueprint For Success`
+      ]
+    }
+  }
+
   const parseHormoziTitles = (content: string): string[] => {
     try {
       // Remove any introductory text
@@ -226,14 +253,23 @@ export default function ViralBlogTitleGenerator() {
   }
 
   const generateTitles = async () => {
-    if (!blogTitle.trim()) return
+    // For specific format, require topic, audience, and promise
+    if (titleFormat === 'specific') {
+      if (!blogTitle.trim() || !audience.trim() || !promise.trim()) {
+        setError('Please enter topic, audience, and promise for the Specific Format')
+        return
+      }
+    } else {
+      // For other formats, just require the blog title
+      if (!blogTitle.trim()) return
+    }
 
     setIsLoading(true)
     setError(null)
     
     try {
       let prompt: string
-      let titles: string[]
+      let titles: string[] = []
       
       if (titleFormat === 'whisper') {
         prompt = `I am going to train you to use the "Whisper Technique."
@@ -265,7 +301,7 @@ For the Outcome Whisper, please use "(And Start Earning $250,000 Per Year In You
 
         const content = await generateTitlesWithAI(prompt)
         titles = parseWhisperTitles(content)
-      } else {
+      } else if (titleFormat === 'hormozi') {
         prompt = `I am going to give you a topic and I want you to generate article titles using the "How to (YAA) without (BOO) even if (Greatest Obstacle)" format.
 
 "YAA" is the goal of the subtopic. For example, "Develop a training plan"
@@ -278,6 +314,49 @@ Please generate 7 headlines using the "How to (YAA) without (BOO) even if (Great
 
         const content = await generateTitlesWithAI(prompt)
         titles = parseHormoziTitles(content)
+      } else if (titleFormat === 'specific') {
+        prompt = `I am going to give you a headline and I want you to make more specific.
+
+A good headline must answer 3 questions:
+What is this about? (the specific topic)
+Who is this for? (the specific type of audience)
+And why should they read it? (the specific promise/outcome)
+
+For example:
+Using the headline "6 Tips For Entry-Level Project Managers To Get Promoted In Their First 30 Days"
+The topic = Promotion Tips
+The audience = Entry-Level Project Managers
+The promise = Get promoted in your first 30 days
+
+And to make a headline more specific...
+For the topic:
+Specify the topic within the topic (instead of "project management" pick a topic inside the umbrella topic of project management—like "task delegation" or "risk assessment" or "stakeholder communication" etc.).
+Specify the application of the topic (project management "what" specific asset—like "project management techniques for software development" or "project management for remote teams" etc.).
+
+For the audience:
+Specify the level of the audience (beginner, intermediate, advanced, etc.)
+Specify the role of the audience (manager, developer, designer, etc.)
+Specify the industry of the audience (tech, finance, healthcare, etc.)
+
+For the promise/outcome:
+Specify the timeframe (in 30 days, in 1 week, etc.)
+Specify the magnitude (2x, 10x, etc.)
+Specify the quality (better, faster, cheaper, etc.)
+
+My topic is: "${blogTitle}"
+My target audience is: "${audience}"
+My promise/outcome is: "${promise}"
+
+Please generate 5 specific headlines that clearly identify the topic, audience, and promise/outcome. Make each headline unique with different specifics. Make sure to incorporate the target audience in each headline and include the promise/outcome in each headline.`
+
+        // Return a Promise for specific title format
+        const titlePromise = generateTitlesWithAI(prompt)
+          .then(content => {
+            return parseSpecificTitles(content);
+          });
+        
+        // Await the Promise to get the titles
+        titles = await titlePromise;
       }
       
       setGeneratedTitles(titles)
@@ -305,8 +384,8 @@ Please generate 7 headlines using the "How to (YAA) without (BOO) even if (Great
         <div className="space-y-4 mb-6">
           <div className="flex flex-col space-y-2">
             <label className="text-sm font-medium">Select Format:</label>
-            <div className="flex space-x-4">
-              <label className="flex items-center space-x-2 cursor-pointer">
+            <div className="flex flex-wrap space-x-4">
+              <label className="flex items-center space-x-2 cursor-pointer mb-2">
                 <input
                   type="radio"
                   checked={titleFormat === 'whisper'}
@@ -315,7 +394,7 @@ Please generate 7 headlines using the "How to (YAA) without (BOO) even if (Great
                 />
                 <span>Whisper Technique</span>
               </label>
-              <label className="flex items-center space-x-2 cursor-pointer">
+              <label className="flex items-center space-x-2 cursor-pointer mb-2">
                 <input
                   type="radio"
                   checked={titleFormat === 'hormozi'}
@@ -324,30 +403,88 @@ Please generate 7 headlines using the "How to (YAA) without (BOO) even if (Great
                 />
                 <span>Hormozi Format</span>
               </label>
+              <label className="flex items-center space-x-2 cursor-pointer mb-2">
+                <input
+                  type="radio"
+                  checked={titleFormat === 'specific'}
+                  onChange={() => setTitleFormat('specific')}
+                  className="form-radio"
+                />
+                <span>Specific Format</span>
+              </label>
             </div>
           </div>
 
-          <div>
-            <label htmlFor="blogTitle" className="block text-sm font-medium mb-1">
-              {titleFormat === 'whisper' 
-                ? 'Enter your blog title' 
-                : 'Enter your topic (YAA - Your Achievable Aim)'}
-            </label>
-            <input
-              id="blogTitle"
-              type="text"
-              value={blogTitle}
-              onChange={(e) => setBlogTitle(e.target.value)}
-              placeholder={titleFormat === 'whisper' 
-                ? 'e.g., How to Grow Your Email List' 
-                : 'e.g., grow your email list'}
-              className="w-full p-2 border rounded-md"
-            />
-          </div>
+          {titleFormat === 'specific' ? (
+            // Two input fields for Specific Format
+            <div className="space-y-4">
+              <div>
+                <label htmlFor="blogTitle" className="block text-sm font-medium mb-1">
+                  Enter your topic
+                </label>
+                <input
+                  id="blogTitle"
+                  type="text"
+                  value={blogTitle}
+                  onChange={(e) => setBlogTitle(e.target.value)}
+                  placeholder="e.g., Project Management Tips"
+                  className="w-full p-2 border rounded-md"
+                />
+              </div>
+              <div>
+                <label htmlFor="audience" className="block text-sm font-medium mb-1">
+                  Enter your target audience
+                </label>
+                <input
+                  id="audience"
+                  type="text"
+                  value={audience}
+                  onChange={(e) => setAudience(e.target.value)}
+                  placeholder="e.g., Entry-Level Project Managers"
+                  className="w-full p-2 border rounded-md"
+                />
+              </div>
+              <div>
+                <label htmlFor="promise" className="block text-sm font-medium mb-1">
+                  Enter your promise/outcome
+                </label>
+                <input
+                  id="promise"
+                  type="text"
+                  value={promise}
+                  onChange={(e) => setPromise(e.target.value)}
+                  placeholder="e.g., Get Promoted In Their First 30 Days"
+                  className="w-full p-2 border rounded-md"
+                />
+              </div>
+            </div>
+          ) : (
+            // Single input field for Whisper and Hormozi formats
+            <div>
+              <label htmlFor="blogTitle" className="block text-sm font-medium mb-1">
+                {titleFormat === 'whisper' 
+                  ? 'Enter your blog title' 
+                  : 'Enter your topic (YAA - Your Achievable Aim)'}
+              </label>
+              <input
+                id="blogTitle"
+                type="text"
+                value={blogTitle}
+                onChange={(e) => setBlogTitle(e.target.value)}
+                placeholder={titleFormat === 'whisper' 
+                  ? 'e.g., How to Grow Your Email List' 
+                  : 'e.g., grow your email list'}
+                className="w-full p-2 border rounded-md"
+              />
+            </div>
+          )}
           
           <Button 
             onClick={generateTitles} 
-            disabled={!blogTitle.trim() || isLoading}
+            disabled={
+              (titleFormat === 'specific' ? (!blogTitle.trim() || !audience.trim() || !promise.trim()) : !blogTitle.trim()) 
+              || isLoading
+            }
             className="w-full"
           >
             {isLoading ? 'Generating...' : 'Generate Viral Titles'}
@@ -436,13 +573,33 @@ Please generate 7 headlines using the "How to (YAA) without (BOO) even if (Great
                     </div>
                   </div>
                 </>
-              ) : (
+              ) : titleFormat === 'hormozi' ? (
                 // Hormozi Format titles
                 generatedTitles.map((title, index) => (
                   <div key={index} className="p-4 bg-gray-50 rounded-md">
                     <div className="flex justify-between items-start">
                       <div>
                         <h3 className="font-medium text-sm text-gray-500 mb-1">Hormozi Title {index + 1}</h3>
+                        <p className="text-lg">{title}</p>
+                      </div>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={() => copyToClipboard(title)}
+                        className="ml-2 flex-shrink-0"
+                      >
+                        Copy
+                      </Button>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                // Specific Format titles
+                generatedTitles.map((title, index) => (
+                  <div key={index} className="p-4 bg-gray-50 rounded-md">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="font-medium text-sm text-gray-500 mb-1">Specific Title {index + 1}</h3>
                         <p className="text-lg">{title}</p>
                       </div>
                       <Button 
@@ -472,7 +629,7 @@ Please generate 7 headlines using the "How to (YAA) without (BOO) even if (Great
               <li><strong>Outcome Whisper:</strong> Shows the ultimate result</li>
             </ul>
           </div>
-        ) : (
+        ) : titleFormat === 'hormozi' ? (
           <div className="mt-8 text-sm text-gray-500">
             <h3 className="font-medium mb-2">About the "Hormozi Format":</h3>
             <p>The Alex Hormozi format uses the structure "How to (YAA) without (BOO) even if (Greatest Obstacle)" where:</p>
@@ -482,6 +639,17 @@ Please generate 7 headlines using the "How to (YAA) without (BOO) even if (Great
               <li><strong>Greatest Obstacle:</strong> A significant challenge that might prevent success</li>
             </ul>
             <p className="mt-2">This format creates highly clickable titles by addressing the goal, removing a common objection, and acknowledging a major obstacle.</p>
+          </div>
+        ) : (
+          <div className="mt-8 text-sm text-gray-500">
+            <h3 className="font-medium mb-2">About the "Specific Format":</h3>
+            <p>A good headline must answer 3 questions to be specific and compelling:</p>
+            <ul className="list-disc pl-5 mt-2 space-y-1">
+              <li><strong>What is this about?</strong> The specific topic (e.g., "6 Tips For Project Managers")</li>
+              <li><strong>Who is this for?</strong> The specific audience (e.g., "Entry-Level Project Managers")</li>
+              <li><strong>Why should they read it?</strong> The specific promise/outcome (e.g., "To Get Promoted In Their First 30 Days")</li>
+            </ul>
+            <p className="mt-2">This format creates highly targeted headlines that clearly communicate value to a specific audience, making them more likely to click and engage with your content.</p>
           </div>
         )}
       </Card>
