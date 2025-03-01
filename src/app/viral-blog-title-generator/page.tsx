@@ -347,7 +347,9 @@ My topic is: "${blogTitle}"
 My target audience is: "${audience}"
 My promise/outcome is: "${promise}"
 
-Please generate 5 specific headlines that clearly identify the topic, audience, and promise/outcome. Make each headline unique with different specifics. Make sure to incorporate the target audience in each headline and include the promise/outcome in each headline.`
+Please generate 5 specific headlines that clearly identify the topic, audience, and promise/outcome. Make each headline unique with different specifics. Make sure to incorporate the target audience in each headline and include the promise/outcome in each headline.
+
+IMPORTANT: Do NOT start the headlines with the audience name followed by a colon (e.g., "Entrepreneurs: ..."). Instead, incorporate the audience naturally within the headline.`
 
         // Return a Promise for specific title format
         const titlePromise = generateTitlesWithAI(prompt)
@@ -599,7 +601,7 @@ Please generate 5 specific headlines that clearly identify the topic, audience, 
                   <div key={index} className="p-4 bg-gray-50 rounded-md">
                     <div className="flex justify-between items-start">
                       <div>
-                        <h3 className="font-medium text-sm text-gray-500 mb-1">Specific Title {index + 1}</h3>
+                        <h3 className="font-medium text-sm text-gray-500 mb-1">{audience} Title</h3>
                         <p className="text-lg">{title}</p>
                       </div>
                       <Button 
