@@ -29,8 +29,21 @@ To learn more about Next.js, take a look at the following resources:
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
+## Deploy on Railway
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+[Railway](https://railway.com?referralCode=rumjahn) is a modern platform that makes it easy to deploy your Next.js applications with just a few clicks. It offers a seamless deployment experience with built-in CI/CD, automatic HTTPS, and easy environment variable management.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Benefits of Railway:
+- **Simple Deployment**: Connect your GitHub repository and deploy with a single click
+- **Automatic Updates**: Automatically deploy when you push to your repository
+- **Built-in Databases**: Easily add PostgreSQL, MySQL, Redis, and more
+- **Custom Domains**: Connect your own domain with automatic HTTPS
+- **Monitoring & Logs**: Real-time logs and metrics for your application
+
+### Get Started with Railway:
+1. Sign up for Railway using [this referral link](https://railway.com?referralCode=rumjahn) to receive **$5 in free credits**
+2. Connect your GitHub repository
+3. Configure your environment variables
+4. Deploy your application
+
+Railway simplifies your infrastructure stack with a single, scalable, easy-to-use platform, allowing you to focus on building your application rather than managing infrastructure.
