@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Button } from "../../../components/ui/button"
 import { Card } from "../../../components/ui/card"
+import { GlowEffect } from "../../../components/ui/glow-effect"
 import Link from "next/link"
 import axios from 'axios'
 import { motion } from 'framer-motion'
@@ -298,32 +299,41 @@ export default function ViralBlogTitleGenerator() {
                 </div>
               )}
               
-              <Button 
-                onClick={generateTitles} 
-                disabled={
-                  (titleFormat === 'specific' ? (!blogTitle.trim() || !audience.trim() || !promise.trim()) : 
-                   titleFormat === 'tangible' ? !blogTitle.trim() : !blogTitle.trim()) 
-                  || isLoading
-                }
-                className="w-full mt-6 py-3 text-lg font-medium transition-all duration-200 bg-gray-700 hover:bg-black text-white"
-              >
-                {isLoading ? (
-                  <div className="flex items-center justify-center">
-                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Generating...
-                  </div>
-                ) : (
-                  <div className="flex items-center justify-center">
-                    <svg className="mr-2" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M12 4V20M20 12H4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                    Generate Viral Titles
-                  </div>
-                )}
-              </Button>
+              <div className="relative mt-6">
+                <GlowEffect
+                  colors={['#FF5733', '#33FF57', '#3357FF', '#F1C40F']}
+                  mode="colorShift"
+                  blur="soft"
+                  duration={3}
+                  scale={0.9}
+                />
+                <button
+                  onClick={generateTitles}
+                  disabled={
+                    (titleFormat === 'specific' ? (!blogTitle.trim() || !audience.trim() || !promise.trim()) : 
+                    titleFormat === 'tangible' ? !blogTitle.trim() : !blogTitle.trim()) 
+                    || isLoading
+                  }
+                  className="relative w-full py-3 text-lg font-medium transition-all duration-200 bg-zinc-950 text-white rounded-md outline outline-1 outline-[#fff2f21f] flex items-center justify-center"
+                >
+                  {isLoading ? (
+                    <div className="flex items-center justify-center">
+                      <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Generating...
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-center">
+                      <svg className="mr-2" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 4V20M20 12H4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                      Generate Viral Titles
+                    </div>
+                  )}
+                </button>
+              </div>
               
               {error && (
                 <div className="mt-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
