@@ -1,10 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from "../../../components/ui/button"
 import { Card } from "../../../components/ui/card"
 import Link from "next/link"
 import axios from 'axios'
+import { motion } from 'framer-motion'
 
 type TitleFormat = 'whisper' | 'hormozi' | 'specific' | 'tangible';
 
@@ -21,6 +22,12 @@ export default function ViralBlogTitleGenerator() {
   const [titleFormat, setTitleFormat] = useState<TitleFormat>('specific')
   const [error, setError] = useState<string | null>(null)
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null)
+  const [titleVisible, setTitleVisible] = useState(false)
+
+  useEffect(() => {
+    // Animate title on page load
+    setTitleVisible(true)
+  }, [])
 
   // Function to copy text to clipboard
   const copyToClipboard = (text: string) => {
@@ -76,20 +83,70 @@ export default function ViralBlogTitleGenerator() {
     }
   }
 
+  // Animation variants
+  const titleVariants = {
+    hidden: { opacity: 0, y: -20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { 
+        duration: 0.6,
+        ease: "easeOut"
+      }
+    }
+  }
+
+  const subtitleVariants = {
+    hidden: { opacity: 0 },
+    visible: { 
+      opacity: 1,
+      transition: { 
+        delay: 0.3,
+        duration: 0.6
+      }
+    }
+  }
+
+  const resultVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: (i: number) => ({ 
+      opacity: 1, 
+      y: 0,
+      transition: { 
+        delay: i * 0.1,
+        duration: 0.5
+      }
+    })
+  }
+
   return (
-    <main className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 py-16 px-4 sm:px-6">
-      <Card className="max-w-4xl mx-auto bg-white shadow-2xl rounded-2xl overflow-hidden">
-        <div className="bg-blue-600 text-white p-8">
+    <main className="min-h-screen bg-white py-16 px-4 sm:px-6">
+      <Card className="max-w-4xl mx-auto bg-white shadow-xl rounded-2xl overflow-hidden">
+        <div className="bg-black text-white p-8">
           <Link href="/" className="text-white/90 hover:text-white flex items-center gap-2 mb-6 transition-colors duration-200 w-fit">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M19 12H5M12 19l-7-7 7-7"/>
             </svg>
             <span>Back to Home</span>
           </Link>
-          <h1 className="text-4xl font-bold mb-3">Viral Blog Title Generator</h1>
-          <p className="text-white/80 text-lg max-w-2xl">
-            Transform your blog titles to make them more engaging and clickable using proven techniques.
-          </p>
+          
+          <motion.h1 
+            className="text-5xl font-bold mb-3 text-center"
+            initial="hidden"
+            animate={titleVisible ? "visible" : "hidden"}
+            variants={titleVariants}
+          >
+            Viral Blog Title Generator
+          </motion.h1>
+          
+          <motion.p 
+            className="text-gray-300 text-xl max-w-2xl mx-auto text-center"
+            initial="hidden"
+            animate={titleVisible ? "visible" : "hidden"}
+            variants={subtitleVariants}
+          >
+            Transform your ideas into attention-grabbing headlines
+          </motion.p>
         </div>
 
         <div className="p-8">
@@ -100,13 +157,13 @@ export default function ViralBlogTitleGenerator() {
                 <div 
                   className={`border rounded-xl p-4 cursor-pointer transition-all duration-200 ${
                     titleFormat === 'whisper' 
-                      ? 'border-blue-500 bg-blue-50 shadow-md' 
-                      : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50/50'
+                      ? 'border-black bg-gray-50 shadow-md' 
+                      : 'border-gray-200 hover:border-gray-400 hover:bg-gray-50/50'
                   }`}
                   onClick={() => setTitleFormat('whisper')}
                 >
                   <div className="flex items-center mb-2">
-                    <div className={`w-4 h-4 rounded-full mr-2 ${titleFormat === 'whisper' ? 'bg-blue-500' : 'border border-gray-300'}`}></div>
+                    <div className={`w-4 h-4 rounded-full mr-2 ${titleFormat === 'whisper' ? 'bg-black' : 'border border-gray-300'}`}></div>
                     <span className="font-medium">Whisper Technique</span>
                   </div>
                   <p className="text-xs text-gray-500">Add parenthetical statements that build trust, address obstacles, highlight benefits, or show outcomes.</p>
@@ -115,13 +172,13 @@ export default function ViralBlogTitleGenerator() {
                 <div 
                   className={`border rounded-xl p-4 cursor-pointer transition-all duration-200 ${
                     titleFormat === 'hormozi' 
-                      ? 'border-blue-500 bg-blue-50 shadow-md' 
-                      : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50/50'
+                      ? 'border-black bg-gray-50 shadow-md' 
+                      : 'border-gray-200 hover:border-gray-400 hover:bg-gray-50/50'
                   }`}
                   onClick={() => setTitleFormat('hormozi')}
                 >
                   <div className="flex items-center mb-2">
-                    <div className={`w-4 h-4 rounded-full mr-2 ${titleFormat === 'hormozi' ? 'bg-blue-500' : 'border border-gray-300'}`}></div>
+                    <div className={`w-4 h-4 rounded-full mr-2 ${titleFormat === 'hormozi' ? 'bg-black' : 'border border-gray-300'}`}></div>
                     <span className="font-medium">Hormozi Format</span>
                   </div>
                   <p className="text-xs text-gray-500">Use the "How to (Goal) without (Problem) even if (Obstacle)" structure for compelling titles.</p>
@@ -130,13 +187,13 @@ export default function ViralBlogTitleGenerator() {
                 <div 
                   className={`border rounded-xl p-4 cursor-pointer transition-all duration-200 ${
                     titleFormat === 'specific' 
-                      ? 'border-blue-500 bg-blue-50 shadow-md' 
-                      : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50/50'
+                      ? 'border-black bg-gray-50 shadow-md' 
+                      : 'border-gray-200 hover:border-gray-400 hover:bg-gray-50/50'
                   }`}
                   onClick={() => setTitleFormat('specific')}
                 >
                   <div className="flex items-center mb-2">
-                    <div className={`w-4 h-4 rounded-full mr-2 ${titleFormat === 'specific' ? 'bg-blue-500' : 'border border-gray-300'}`}></div>
+                    <div className={`w-4 h-4 rounded-full mr-2 ${titleFormat === 'specific' ? 'bg-black' : 'border border-gray-300'}`}></div>
                     <span className="font-medium">Specific Format</span>
                   </div>
                   <p className="text-xs text-gray-500">Create targeted headlines that clearly identify topic, audience, and promise/outcome.</p>
@@ -145,13 +202,13 @@ export default function ViralBlogTitleGenerator() {
                 <div 
                   className={`border rounded-xl p-4 cursor-pointer transition-all duration-200 ${
                     titleFormat === 'tangible' 
-                      ? 'border-blue-500 bg-blue-50 shadow-md' 
-                      : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50/50'
+                      ? 'border-black bg-gray-50 shadow-md' 
+                      : 'border-gray-200 hover:border-gray-400 hover:bg-gray-50/50'
                   }`}
                   onClick={() => setTitleFormat('tangible')}
                 >
                   <div className="flex items-center mb-2">
-                    <div className={`w-4 h-4 rounded-full mr-2 ${titleFormat === 'tangible' ? 'bg-blue-500' : 'border border-gray-300'}`}></div>
+                    <div className={`w-4 h-4 rounded-full mr-2 ${titleFormat === 'tangible' ? 'bg-black' : 'border border-gray-300'}`}></div>
                     <span className="font-medium">Tangible Format</span>
                   </div>
                   <p className="text-xs text-gray-500">Transform vague concepts into specific, measurable outcomes with concrete numbers and timeframes.</p>
@@ -175,7 +232,7 @@ export default function ViralBlogTitleGenerator() {
                       value={blogTitle}
                       onChange={(e) => setBlogTitle(e.target.value)}
                       placeholder="e.g., Project Management Tips"
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-black transition-all duration-200"
                     />
                   </div>
                   <div>
@@ -188,7 +245,7 @@ export default function ViralBlogTitleGenerator() {
                       value={audience}
                       onChange={(e) => setAudience(e.target.value)}
                       placeholder="e.g., Entry-Level Project Managers"
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-black transition-all duration-200"
                     />
                   </div>
                   <div>
@@ -201,7 +258,7 @@ export default function ViralBlogTitleGenerator() {
                       value={promise}
                       onChange={(e) => setPromise(e.target.value)}
                       placeholder="e.g., Get Promoted In Their First 30 Days"
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-black transition-all duration-200"
                     />
                   </div>
                 </div>
@@ -217,7 +274,7 @@ export default function ViralBlogTitleGenerator() {
                     value={blogTitle}
                     onChange={(e) => setBlogTitle(e.target.value)}
                     placeholder="e.g., Make more money with email marketing"
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-black transition-all duration-200"
                   />
                 </div>
               ) : (
@@ -236,7 +293,7 @@ export default function ViralBlogTitleGenerator() {
                     placeholder={titleFormat === 'whisper' 
                       ? 'e.g., How to Grow Your Email List' 
                       : 'e.g., grow your email list'}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-black transition-all duration-200"
                   />
                 </div>
               )}
@@ -248,7 +305,7 @@ export default function ViralBlogTitleGenerator() {
                    titleFormat === 'tangible' ? !blogTitle.trim() : !blogTitle.trim()) 
                   || isLoading
                 }
-                className="w-full mt-6 py-3 text-lg font-medium transition-all duration-200 bg-blue-600 hover:bg-blue-700"
+                className="w-full mt-6 py-3 text-lg font-medium transition-all duration-200 bg-gray-700 hover:bg-black text-white"
               >
                 {isLoading ? (
                   <div className="flex items-center justify-center">
@@ -259,7 +316,12 @@ export default function ViralBlogTitleGenerator() {
                     Generating...
                   </div>
                 ) : (
-                  'Generate Viral Titles'
+                  <div className="flex items-center justify-center">
+                    <svg className="mr-2" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M12 4V20M20 12H4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                    Generate Viral Titles
+                  </div>
                 )}
               </Button>
               
@@ -281,11 +343,18 @@ export default function ViralBlogTitleGenerator() {
                 <h2 className="text-2xl font-bold mb-6 text-gray-800">Generated Titles</h2>
                 <div className="space-y-4">
                   {generatedTitles.map((title, index) => (
-                    <div key={index} className="p-5 bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200">
+                    <motion.div 
+                      key={index} 
+                      className="p-5 bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200"
+                      custom={index}
+                      initial="hidden"
+                      animate="visible"
+                      variants={resultVariants}
+                    >
                       <div className="flex justify-between items-start">
                         <div className="flex-1">
-                          <h3 className="font-medium text-sm text-blue-600 mb-2 flex items-center">
-                            <span className="inline-block w-2 h-2 bg-blue-600 rounded-full mr-2"></span>
+                          <h3 className="font-medium text-sm text-gray-600 mb-2 flex items-center">
+                            <span className="inline-block w-2 h-2 bg-black rounded-full mr-2"></span>
                             Title {index + 1}
                           </h3>
                           <p className="text-lg font-medium text-gray-800">{title}</p>
@@ -294,12 +363,12 @@ export default function ViralBlogTitleGenerator() {
                           variant={copiedIndex === index ? "default" : "outline"} 
                           size="sm" 
                           onClick={() => handleCopy(title, index)}
-                          className={`ml-4 flex-shrink-0 ${copiedIndex === index ? 'bg-green-600' : ''}`}
+                          className={`ml-4 flex-shrink-0 ${copiedIndex === index ? 'bg-black text-white' : 'border-gray-300 text-gray-700'}`}
                         >
                           {copiedIndex === index ? 'Copied!' : 'Copy'}
                         </Button>
                       </div>
-                    </div>
+                    </motion.div>
                   ))}
                 </div>
               </div>
