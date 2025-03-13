@@ -38,8 +38,10 @@ export default function BlogTitleResearcher() {
 
     try {
       // Fetch news articles
+      console.log('Fetching news for topic:', topic)
       const newsResponse = await axios.get(`/api/news?q=${encodeURIComponent(topic)}`)
-      setNewsArticles(newsResponse.data.articles)
+      console.log('News response:', newsResponse.data)
+      setNewsArticles(newsResponse.data.articles || [])
 
       // Generate titles using the news context
       const response = await axios.post('/api/generate-titles', { topic })
