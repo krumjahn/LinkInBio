@@ -1,7 +1,11 @@
 import { NextResponse } from 'next/server'
 import axios from 'axios'
+import { supabase, saveToHistory, initializeDatabase } from '@/lib/supabase'
 
 const NEWS_API_KEY = 'e0a665da9488411580cac8e79e8d114f'
+
+// Initialize database on server start
+initializeDatabase().catch(console.error)
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
@@ -36,6 +40,18 @@ export async function GET(request: Request) {
     console.log('Found articles:', response.data.articles?.length || 0)
 
     console.log('NewsAPI response:', response.data)
+    
+    // Save to Supabase history
+    await saveToHistory({
+      input: query,
+      output: JSON.stringify(response.data.articles),
+      type: 'news',
+      metadata: {
+        url: url,
+        articleCount: response.data.articles?.length || 0
+      }
+    })
+
     return NextResponse.json({ articles: response.data.articles })
   } catch (error: any) {
     console.error('Error fetching news:', error)

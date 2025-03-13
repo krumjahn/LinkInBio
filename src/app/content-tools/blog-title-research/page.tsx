@@ -54,7 +54,9 @@ export default function BlogTitleResearcher() {
 
       // Generate titles using the news context
       const response = await axios.post('/api/generate-titles', { topic })
-      setSuggestions(response.data.titles)
+      console.log('Title generation response:', response.data)
+      setSuggestions(response.data.titles || [])
+      console.log('Updated suggestions state:', response.data.titles || [])
     } catch (error) {
       console.error('Error analyzing suggestions:', error)
       setError('An error occurred while fetching suggestions. Please try again.')
@@ -64,15 +66,22 @@ export default function BlogTitleResearcher() {
   }
 
   return (
-    <main className="min-h-screen bg-white py-16 px-4 sm:px-6">
+    <main className="min-h-screen bg-white py-8 px-4 sm:px-6">
+      <div className="max-w-4xl mx-auto mb-6 flex justify-between items-center">
+        <h1 className="text-2xl font-bold">Blog Title Research</h1>
+        <Link 
+          href="/content-tools/history" 
+          className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          View History
+        </Link>
+      </div>
+
       <Card className="max-w-4xl mx-auto bg-white shadow-xl rounded-2xl overflow-hidden">
         <div className="bg-black text-white p-8">
-          <Link href="/content-tools" className="text-white/90 hover:text-white flex items-center gap-2 mb-6 transition-colors duration-200 w-fit">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M19 12H5M12 19l-7-7 7-7"/>
-            </svg>
-            <span>Back to Tools</span>
-          </Link>
           
           <motion.h1 
             className="text-5xl font-bold mb-3 text-center"

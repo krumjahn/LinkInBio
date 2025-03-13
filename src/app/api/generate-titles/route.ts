@@ -1,5 +1,9 @@
 import { NextResponse } from 'next/server'
 import axios from 'axios'
+import { saveToHistory, initializeDatabase } from '@/lib/supabase'
+
+// Initialize database on server start
+initializeDatabase().catch(console.error)
 
 interface TitleSuggestion {
   title: string
@@ -9,7 +13,17 @@ interface TitleSuggestion {
   reasoning: string
 }
 
-const OPENROUTER_API_KEY = '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'
+// API keys should be in environment variables
+const OPENROUTER_API_KEY = process.env.NEXT_PUBLIC_OPENROUTER_API_KEY || process.env.OPENROUTER_API_KEY
+const NEWS_API_KEY = process.env.NEXT_PUBLIC_NEWS_API_KEY || process.env.NEWS_API_KEY
+
+if (!OPENROUTER_API_KEY || !NEWS_API_KEY) {
+  console.error('Missing API keys:', { 
+    hasOpenRouter: !!OPENROUTER_API_KEY, 
+    hasNewsApi: !!NEWS_API_KEY 
+  })
+  throw new Error('Missing required API keys in environment variables')
+}
 
 async function fetchNewsArticles(topic: string) {
   try {
@@ -17,7 +31,7 @@ async function fetchNewsArticles(topic: string) {
       `https://newsapi.org/v2/everything?q=${encodeURIComponent(topic)}&sortBy=relevancy&pageSize=5&language=en`,
       {
         headers: {
-          'X-Api-Key': 'e0a665da9488411580cac8e79e8d114f'
+          'X-Api-Key': NEWS_API_KEY
         }
       }
     )
@@ -109,50 +123,134 @@ Remember to:
 - Make titles both timely (news) and evergreen (search trends)
 - Reference specific news stories and search trends in your reasoning`
 
-    const response = await axios.post(
-      'https://openrouter.ai/api/v1/chat/completions',
-      {
-        model: 'deepseek/deepseek-r1-zero:free',
-        messages: [
-          {
-            role: 'user',
-            content: prompt
+    let aiResponse;
+    try {
+      const response = await axios.post(
+        'https://openrouter.ai/api/v1/chat/completions',
+        {
+          model: 'google/gemma-3-27b-it:free',
+          messages: [
+            {
+              role: 'user',
+              content: prompt
+            }
+          ]
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+            'HTTP-Referer': 'https://github.com/krumjahn/App',
+            'X-Title': 'Blog Title Generator'
           }
-        ]
-      },
-      {
-        headers: {
-          'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
-          'HTTP-Referer': 'https://github.com/krumjahn/App',
-          'X-Title': 'Blog Title Generator'
         }
+      )
+      
+      if (!response.data) {
+        throw new Error('No data received from OpenRouter API')
       }
-    )
 
-    const content = response.data.choices[0].message.content
+      if (!response.data?.choices?.[0]?.message?.content) {
+        console.error('Invalid response format from OpenRouter:', response.data)
+        throw new Error('Invalid response format from AI service')
+      }
+      
+      aiResponse = response.data;
+    } catch (error) {
+      console.error('Error calling OpenRouter API:', error)
+      throw new Error('Failed to get response from OpenRouter API: ' + (error as Error).message)
+    }
+
+    const content = aiResponse.choices[0].message.content
+    console.log('Raw AI response:', content)
 
     // Parse the response into structured data
-    const titles = content.split('\n\n').filter(Boolean).map((block: string) => {
-      const titleMatch = block.match(/Title: (.+)/)
-      const newsScoreMatch = block.match(/NewsScore: (\d+)/)
-      const searchScoreMatch = block.match(/SearchScore: (\d+)/)
-      const overallScoreMatch = block.match(/OverallScore: (\d+)/)
-      const reasoningMatch = block.match(/Reasoning: (.+)/)
-
-      return {
-        title: titleMatch?.[1] || '',
-        newsScore: parseInt(newsScoreMatch?.[1] || '0', 10),
-        searchScore: parseInt(searchScoreMatch?.[1] || '0', 10),
-        score: parseInt(overallScoreMatch?.[1] || '0', 10),
-        reasoning: reasoningMatch?.[1] || ''
+    let titles: TitleSuggestion[] = []
+    let parseError: Error | null = null
+    
+    try {
+      // First try parsing as JSON
+      const jsonContent = JSON.parse(content)
+      if (Array.isArray(jsonContent)) {
+        titles = jsonContent.map(item => ({
+          title: item.title,
+          newsScore: item.news_score || item.newsScore,
+          searchScore: item.search_score || item.searchScore,
+          score: item.overall_score || item.score,
+          reasoning: item.reasoning
+        }))
       }
-    }).filter((title: TitleSuggestion) => title.title && title.score && title.newsScore && title.searchScore)
+    } catch (e) {
+      parseError = e as Error
+      // If JSON parsing fails, try the text-based format
+      const blocks = content.split(/\n(?=Title:)/).filter(Boolean)
+      
+      for (const block of blocks) {
+        const lines = block.split('\n')
+        let currentTitle: Partial<TitleSuggestion> = {}
 
+        for (const line of lines) {
+          if (line.startsWith('Title:')) {
+            currentTitle.title = line.replace('Title:', '').trim()
+          } else if (line.startsWith('NewsScore:')) {
+            currentTitle.newsScore = parseInt(line.replace('NewsScore:', '').trim(), 10)
+          } else if (line.startsWith('SearchScore:')) {
+            currentTitle.searchScore = parseInt(line.replace('SearchScore:', '').trim(), 10)
+          } else if (line.startsWith('OverallScore:')) {
+            currentTitle.score = parseInt(line.replace('OverallScore:', '').trim(), 10)
+          } else if (line.startsWith('Reasoning:')) {
+            currentTitle.reasoning = line.replace('Reasoning:', '').trim()
+          }
+        }
+
+        if (currentTitle.title && 
+            typeof currentTitle.newsScore === 'number' && 
+            typeof currentTitle.searchScore === 'number' && 
+            typeof currentTitle.score === 'number' && 
+            currentTitle.reasoning) {
+          titles.push(currentTitle as TitleSuggestion)
+        }
+      }
+    }
+    
+    // Validate the parsed titles
+    titles = titles.filter(title => 
+      title.title && 
+      typeof title.newsScore === 'number' && 
+      typeof title.searchScore === 'number' && 
+      typeof title.score === 'number' && 
+      title.reasoning
+    )
+
+    if (titles.length === 0) {
+      console.error('No valid titles parsed from response')
+      console.error('Parse error:', parseError)
+      console.error('Raw content:', content)
+      throw new Error('Failed to parse valid titles from AI response')
+    }
+
+    console.log('Parsed titles:', titles)
+
+    // Save to Supabase history
+    try {
+      await saveToHistory({
+        input: topic,
+        output: JSON.stringify(titles),
+        type: 'title',
+        metadata: {
+          newsArticles: articles.length,
+          suggestions: suggestions.length,
+          generatedTitles: titles.length
+        }
+      })
+    } catch (error) {
+      // Log but don't fail if history saving fails
+      console.error('Error saving to history:', error)
+    }
     return NextResponse.json({ titles })
   } catch (error) {
     console.error('Error generating titles:', error)
     return NextResponse.json(
-      { error: 'Failed to generate titles' },
+      { error: (error as Error).message || 'Failed to generate titles' },
       { status: 500 }
     )
   }
