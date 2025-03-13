@@ -20,7 +20,16 @@ interface NewsArticle {
 interface SuggestionResult {
   title: string
   score: number
+  newsScore: number
+  searchScore: number
   reasoning: string
+}
+
+const getScoreColor = (score: number) => {
+  if (score >= 85) return 'bg-green-100 text-green-800'
+  if (score >= 70) return 'bg-blue-100 text-blue-800'
+  if (score >= 50) return 'bg-yellow-100 text-yellow-800'
+  return 'bg-red-100 text-red-800'
 }
 
 export default function BlogTitleResearcher() {
@@ -174,14 +183,25 @@ export default function BlogTitleResearcher() {
                     >
                       <div className="flex items-start justify-between">
                         <div>
-                          <div className="flex items-center gap-2 mb-2">
-                            <span className={`px-2 py-1 text-xs font-medium rounded ${
-                              suggestion.score >= 80 ? 'bg-green-100 text-green-800' :
-                              suggestion.score >= 60 ? 'bg-blue-100 text-blue-800' :
-                              'bg-yellow-100 text-yellow-800'
-                            }`}>
-                              Score: {suggestion.score}/100
-                            </span>
+                          <div className="flex flex-wrap items-center gap-3 mb-3">
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs text-gray-600">News:</span>
+                              <span className={`px-2 py-1 text-xs font-medium rounded ${getScoreColor(suggestion.newsScore)}`}>
+                                {suggestion.newsScore}/100
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs text-gray-600">Search:</span>
+                              <span className={`px-2 py-1 text-xs font-medium rounded ${getScoreColor(suggestion.searchScore)}`}>
+                                {suggestion.searchScore}/100
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs text-gray-600">Overall:</span>
+                              <span className={`px-2 py-1 text-xs font-medium rounded-full ${getScoreColor(suggestion.score)}`}>
+                                {suggestion.score}/100
+                              </span>
+                            </div>
                           </div>
                           <h3 className="text-lg font-medium text-gray-900">{suggestion.title}</h3>
                           <div className="mt-2">

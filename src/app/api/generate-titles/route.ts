@@ -3,6 +3,8 @@ import axios from 'axios'
 
 interface TitleSuggestion {
   title: string
+  newsScore: number
+  searchScore: number
   score: number
   reasoning: string
 }
@@ -92,23 +94,20 @@ For each title:
 1. Make it attention-grabbing and unique by combining insights from both news articles and search trends
 2. Consider SEO best practices and incorporate high-performing search terms
 3. Aim for high click-through rates by addressing current user interests
-4. Score it from 1-100 based on:
-   - Relevance to current news (30%)
-   - Search popularity (30%)
-   - Click-through potential (40%)
-5. Provide brief reasoning for the score, referencing both news and search trends
 
 Format each title as:
 Title: [The Title]
-Score: [1-100]
-Reasoning: [Brief explanation referencing both news and search data]
+NewsScore: [1-100] (based on relevance to current news and trending topics)
+SearchScore: [1-100] (based on search volume and keyword optimization)
+OverallScore: [1-100] (weighted average: 40% news + 60% search)
+Reasoning: [Explain how the title combines news angles with search trends, and why it will perform well]
 
 Remember to:
-- Combine newsworthy angles with popular search terms
+- Lead with the most newsworthy angle from current articles
+- Incorporate high-volume search terms naturally
 - Use proven headline patterns that match search intent
-- Include trending keywords from Google suggestions
 - Make titles both timely (news) and evergreen (search trends)
-- Vary formats (how-to, listicles, questions) based on what's performing well`
+- Reference specific news stories and search trends in your reasoning`
 
     const response = await axios.post(
       'https://openrouter.ai/api/v1/chat/completions',
@@ -135,15 +134,19 @@ Remember to:
     // Parse the response into structured data
     const titles = content.split('\n\n').filter(Boolean).map((block: string) => {
       const titleMatch = block.match(/Title: (.+)/)
-      const scoreMatch = block.match(/Score: (\d+)/)
+      const newsScoreMatch = block.match(/NewsScore: (\d+)/)
+      const searchScoreMatch = block.match(/SearchScore: (\d+)/)
+      const overallScoreMatch = block.match(/OverallScore: (\d+)/)
       const reasoningMatch = block.match(/Reasoning: (.+)/)
 
       return {
         title: titleMatch?.[1] || '',
-        score: parseInt(scoreMatch?.[1] || '0', 10),
+        newsScore: parseInt(newsScoreMatch?.[1] || '0', 10),
+        searchScore: parseInt(searchScoreMatch?.[1] || '0', 10),
+        score: parseInt(overallScoreMatch?.[1] || '0', 10),
         reasoning: reasoningMatch?.[1] || ''
       }
-    }).filter((title: TitleSuggestion) => title.title && title.score)
+    }).filter((title: TitleSuggestion) => title.title && title.score && title.newsScore && title.searchScore)
 
     return NextResponse.json({ titles })
   } catch (error) {
