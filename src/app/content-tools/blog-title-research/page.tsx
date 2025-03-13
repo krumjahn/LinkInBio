@@ -7,6 +7,16 @@ import Link from "next/link"
 import { motion } from 'framer-motion'
 import axios from 'axios'
 
+interface NewsArticle {
+  title: string
+  description: string
+  url: string
+  source: {
+    name: string
+  }
+  publishedAt: string
+}
+
 interface SuggestionResult {
   title: string
   score: number
@@ -17,6 +27,7 @@ export default function BlogTitleResearcher() {
   const [topic, setTopic] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [suggestions, setSuggestions] = useState<SuggestionResult[]>([])
+  const [newsArticles, setNewsArticles] = useState<NewsArticle[]>([])
   const [error, setError] = useState<string | null>(null)
 
   const analyzeSuggestions = async () => {
@@ -26,6 +37,11 @@ export default function BlogTitleResearcher() {
     setError(null)
 
     try {
+      // Fetch news articles
+      const newsResponse = await axios.get(`/api/news?q=${encodeURIComponent(topic)}`)
+      setNewsArticles(newsResponse.data.articles)
+
+      // Generate titles using the news context
       const response = await axios.post('/api/generate-titles', { topic })
       setSuggestions(response.data.titles)
     } catch (error) {
@@ -107,9 +123,44 @@ export default function BlogTitleResearcher() {
               </div>
             )}
 
+            {newsArticles.length > 0 && (
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold mb-4">Related News</h2>
+                <div className="space-y-4">
+                  {newsArticles.map((article, index) => (
+                    <motion.div
+                      key={index}
+                      className="p-4 bg-gray-50 rounded-lg"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                    >
+                      <a 
+                        href={article.url} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="block hover:bg-gray-100 transition-colors duration-200 rounded-lg -m-4 p-4"
+                      >
+                        <h3 className="font-medium text-gray-900">{article.title}</h3>
+                        {article.description && (
+                          <p className="mt-1 text-sm text-gray-600">{article.description}</p>
+                        )}
+                        <div className="mt-2 flex items-center gap-2 text-xs text-gray-500">
+                          <span>{article.source.name}</span>
+                          <span>•</span>
+                          <span>{new Date(article.publishedAt).toLocaleDateString()}</span>
+                        </div>
+                      </a>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {suggestions.length > 0 && (
               <div>
-                <h2 className="text-2xl font-bold mb-6">Suggested Titles</h2>
+                <h2 className="text-2xl font-bold mb-6">AI-Generated Titles</h2>
+                <p className="text-gray-600 mb-6">Based on current news and trends, here are your optimized blog titles:</p>
                 <div className="space-y-4">
                   {suggestions.map((suggestion, index) => (
                     <motion.div
