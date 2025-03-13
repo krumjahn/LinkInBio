@@ -53,8 +53,8 @@ export default function Home() {
           </Button>
 
           <Button variant="outline" className="w-full" asChild>
-            <Link href="https://buymeacoffee.com/rumjahn">
-              Buy me a coffee
+            <Link href="https://2828633406999.gumroad.com/l/rumjahn">
+              n8n SEO A.I. System
             </Link>
           </Button>
 
