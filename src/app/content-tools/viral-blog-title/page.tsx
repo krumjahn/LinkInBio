@@ -1,9 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Button } from "../../../components/ui/button"
-import { Card } from "../../../components/ui/card"
-import { GlowEffect } from "../../../components/ui/glow-effect"
+import { Button } from "../../../../components/ui/button"
+import { Card } from "../../../../components/ui/card"
+import { GlowEffect } from "../../../../components/ui/glow-effect"
 import Link from "next/link"
 import axios from 'axios'
 import { motion } from 'framer-motion'
@@ -130,11 +130,11 @@ export default function ViralBlogTitleGenerator() {
     <main className="min-h-screen bg-white py-16 px-4 sm:px-6">
       <Card className="max-w-4xl mx-auto bg-white shadow-xl rounded-2xl overflow-hidden">
         <div className="bg-black text-white p-8">
-          <Link href="/" className="text-white/90 hover:text-white flex items-center gap-2 mb-6 transition-colors duration-200 w-fit">
+          <Link href="/content-tools" className="text-white/90 hover:text-white flex items-center gap-2 mb-6 transition-colors duration-200 w-fit">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M19 12H5M12 19l-7-7 7-7"/>
             </svg>
-            <span>Back to Home</span>
+            <span>Back to Tools</span>
           </Link>
           
           <motion.h1 

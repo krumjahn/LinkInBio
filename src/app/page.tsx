@@ -59,8 +59,8 @@ export default function Home() {
           </Button>
 
           <Button variant="outline" className="w-full" asChild>
-            <Link href="/viral-blog-title-generator">
-              Viral Blog Title Generator
+            <Link href="/content-tools">
+              Content Generation Tools
             </Link>
           </Button>
         </div>
