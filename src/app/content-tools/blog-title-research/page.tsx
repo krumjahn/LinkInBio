@@ -9,9 +9,8 @@ import axios from 'axios'
 
 interface SuggestionResult {
   title: string
-  source: 'google' | 'news'
-  searchVolume?: string
-  competition?: string
+  score: number
+  reasoning: string
 }
 
 export default function BlogTitleResearcher() {
@@ -27,8 +26,8 @@ export default function BlogTitleResearcher() {
     setError(null)
 
     try {
-      const response = await axios.get(`/api/suggestions?q=${encodeURIComponent(topic)}`)
-      setSuggestions(response.data.results)
+      const response = await axios.post('/api/generate-titles', { topic })
+      setSuggestions(response.data.titles)
     } catch (error) {
       console.error('Error analyzing suggestions:', error)
       setError('An error occurred while fetching suggestions. Please try again.')
@@ -124,27 +123,16 @@ export default function BlogTitleResearcher() {
                         <div>
                           <div className="flex items-center gap-2 mb-2">
                             <span className={`px-2 py-1 text-xs font-medium rounded ${
-                              suggestion.source === 'google' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'
+                              suggestion.score >= 80 ? 'bg-green-100 text-green-800' :
+                              suggestion.score >= 60 ? 'bg-blue-100 text-blue-800' :
+                              'bg-yellow-100 text-yellow-800'
                             }`}>
-                              {suggestion.source === 'google' ? 'Search Trend' : 'News Trend'}
+                              Score: {suggestion.score}/100
                             </span>
                           </div>
                           <h3 className="text-lg font-medium text-gray-900">{suggestion.title}</h3>
-                          <div className="mt-2 flex gap-4">
-                            <span className="text-sm text-gray-600">
-                              Search Volume: <span className={`font-medium ${
-                                suggestion.searchVolume === 'High' ? 'text-green-600' :
-                                suggestion.searchVolume === 'Medium' ? 'text-yellow-600' :
-                                'text-red-600'
-                              }`}>{suggestion.searchVolume}</span>
-                            </span>
-                            <span className="text-sm text-gray-600">
-                              Competition: <span className={`font-medium ${
-                                suggestion.competition === 'Low' ? 'text-green-600' :
-                                suggestion.competition === 'Medium' ? 'text-yellow-600' :
-                                'text-red-600'
-                              }`}>{suggestion.competition}</span>
-                            </span>
+                          <div className="mt-2">
+                            <p className="text-sm text-gray-600">{suggestion.reasoning}</p>
                           </div>
                         </div>
                         <Button
