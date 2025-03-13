@@ -20,64 +20,6 @@ export default function BlogTitleResearcher() {
   const [suggestions, setSuggestions] = useState<SuggestionResult[]>([])
   const [error, setError] = useState<string | null>(null)
 
-  const fetchGoogleSuggestions = async (query: string) => {
-    try {
-      const response = await axios.get(`https://google.com/complete/search?output=toolbar&gl=US&q=${encodeURIComponent(query)}`, {
-        headers: {
-          'Accept': 'application/xml'
-        }
-      })
-      
-      // Parse XML response
-      const parser = new DOMParser()
-      const xmlDoc = parser.parseFromString(response.data, 'text/xml')
-      const suggestions = Array.from(xmlDoc.getElementsByTagName('suggestion'))
-        .map(suggestion => suggestion.getAttribute('data'))
-        .filter(Boolean)
-        .map(title => ({
-          title: title as string,
-          source: 'google' as const,
-          searchVolume: 'Medium', // This would ideally come from a real API
-          competition: 'Low' // This would ideally come from a real API
-        }))
-
-      return suggestions
-    } catch (error) {
-      console.error('Error fetching Google suggestions:', error)
-      return []
-    }
-  }
-
-  const fetchNewsResults = async (query: string) => {
-    try {
-      // This would ideally use a news API like NewsAPI.org
-      // For now, we'll return some example results
-      return [
-        {
-          title: `Latest Trends in ${query} for 2025`,
-          source: 'news' as const,
-          searchVolume: 'High',
-          competition: 'Medium'
-        },
-        {
-          title: `How ${query} is Transforming Business`,
-          source: 'news' as const,
-          searchVolume: 'Medium',
-          competition: 'Low'
-        },
-        {
-          title: `The Future of ${query}: Expert Predictions`,
-          source: 'news' as const,
-          searchVolume: 'High',
-          competition: 'Low'
-        }
-      ]
-    } catch (error) {
-      console.error('Error fetching news results:', error)
-      return []
-    }
-  }
-
   const analyzeSuggestions = async () => {
     if (!topic.trim()) return
 
@@ -85,12 +27,8 @@ export default function BlogTitleResearcher() {
     setError(null)
 
     try {
-      const [googleResults, newsResults] = await Promise.all([
-        fetchGoogleSuggestions(topic),
-        fetchNewsResults(topic)
-      ])
-
-      setSuggestions([...googleResults, ...newsResults])
+      const response = await axios.get(`/api/suggestions?q=${encodeURIComponent(topic)}`)
+      setSuggestions(response.data.results)
     } catch (error) {
       console.error('Error analyzing suggestions:', error)
       setError('An error occurred while fetching suggestions. Please try again.')
