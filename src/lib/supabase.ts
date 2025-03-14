@@ -1,24 +1,27 @@
 import { createClient } from '@supabase/supabase-js';
 
-// Use hardcoded values for Supabase configuration (from MCP server)
+// Use hardcoded values for Supabase configuration
 const supabaseUrl = 'https://hkbvjdgowdksdkluyirh.supabase.co';
-const supabaseAnonKey = 'ZgbTkjY#^0E5M3VzP%TB';
+
+// NOTE: Based on testing, only the service role key works reliably
+// The anon key with special characters causes connection issues
 const supabaseServiceKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhrYnZqZGdvd2Rrc2RrbHV5aXJoIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0MTg0MzQ3NywiZXhwIjoyMDU3NDE5NDc3fQ.L8AXu-dlI9RpVrWczPlTw0fOnJZZvw6SgsByKkdwIGM';
 
-// Log Supabase configuration
-console.log('Supabase URL:', supabaseUrl);
-console.log('Using Supabase MCP server configuration');
+// Log Supabase configuration only on the server side
+if (typeof window === 'undefined') {
+  console.log('Supabase URL:', supabaseUrl);
+  console.log('Using Supabase service role key for all operations');
+}
 
 // Validate configuration
-if (!supabaseUrl || !supabaseAnonKey || !supabaseServiceKey) {
+if (!supabaseUrl || !supabaseServiceKey) {
   console.error('Missing required configuration for Supabase');
   if (!supabaseUrl) console.error('Supabase URL is not set');
-  if (!supabaseAnonKey) console.error('Supabase Anon Key is not set');
   if (!supabaseServiceKey) console.error('Supabase Service Key is not set');
 }
 
 // Create regular client for data operations
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+export const supabase = createClient(supabaseUrl, supabaseServiceKey, {
   auth: {
     persistSession: false,
     autoRefreshToken: false,
@@ -28,6 +31,21 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     schema: 'public'
   }
 });
+
+// Add debug logging
+console.log('Supabase client created successfully');
+
+// Test the connection on initialization
+if (typeof window === 'undefined') {
+  // Only run this on the server to avoid console spam
+  supabase.from('history').select('count').then(({ data, error }) => {
+    if (error) {
+      console.error('Initial Supabase connection test failed:', error);
+    } else {
+      console.log('Initial Supabase connection test succeeded:', data);
+    }
+  });
+}
 
 // Create admin client for schema management
 export const adminClient = createClient(supabaseUrl, supabaseServiceKey, {
@@ -41,15 +59,31 @@ export const adminClient = createClient(supabaseUrl, supabaseServiceKey, {
   }
 });
 
+// Provide a function to get a fresh client instance (useful for client-side)
+export function getSupabaseClient() {
+  console.log('Creating fresh Supabase client instance');
+  return createClient(supabaseUrl, supabaseServiceKey, {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+      detectSessionInUrl: false
+    },
+    db: {
+      schema: 'public'
+    }
+  });
+}
+
 // Export a function to check if Supabase is properly configured
 export function checkSupabaseConfig() {
-  if (!supabaseUrl || !supabaseAnonKey) {
+  if (!supabaseUrl || !supabaseServiceKey) {
     throw new Error(
-      'Supabase configuration is incomplete. Please check your environment variables:\n' +
-      (!supabaseUrl ? '- NEXT_PUBLIC_SUPABASE_URL is missing\n' : '') +
-      (!supabaseAnonKey ? '- NEXT_PUBLIC_SUPABASE_ANON_KEY is missing\n' : '')
+      'Supabase configuration is incomplete. Please check your configuration:\n' +
+      (!supabaseUrl ? '- Supabase URL is missing\n' : '') +
+      (!supabaseServiceKey ? '- Supabase Service Key is missing\n' : '')
     );
   }
+  console.log('Supabase configuration check passed');
   return true;
 }
 

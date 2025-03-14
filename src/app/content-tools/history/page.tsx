@@ -3,7 +3,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useEffect, useState } from 'react';
-import { supabase, type HistoryRecord, initializeDatabase } from '@/lib/supabase';
+import { getSupabaseClient, type HistoryRecord, initializeDatabase } from '@/lib/supabase';
 
 export default function HistoryPage() {
   const [history, setHistory] = useState<HistoryRecord[]>([]);
@@ -15,13 +15,17 @@ export default function HistoryPage() {
     // Initialize database and load history
     const init = async () => {
       try {
+        console.log('History page: Initializing...');
         // Try to initialize the database first
-        await initializeDatabase();
+        const initResult = await initializeDatabase();
+        console.log('History page: Database initialization result:', initResult);
+        
         // Then load the history
+        console.log('History page: Loading history...');
         await loadHistory();
       } catch (error) {
-        console.error('Error initializing:', error);
-        setError('Failed to initialize database');
+        console.error('History page: Error initializing:', error);
+        setError('Failed to initialize database: ' + (error instanceof Error ? error.message : String(error)));
       }
     };
     init();
@@ -29,16 +33,30 @@ export default function HistoryPage() {
 
   const loadHistory = async () => {
     try {
+      console.log('loadHistory: Starting to load history...');
       setLoading(true);
       setError(null);
       
+      // Create a fresh client instance for client-side use
+      console.log('loadHistory: Creating Supabase client...');
+      const supabaseClient = getSupabaseClient();
+      console.log('loadHistory: Supabase client created successfully');
+      
       // First, check if we can connect to Supabase
-      const { data: healthCheck, error: healthError } = await supabase
+      console.log('loadHistory: Testing Supabase connection...');
+      const { data: healthCheck, error: healthError } = await supabaseClient
         .from('history')
         .select('count');
 
       if (healthError) {
-        console.error('Supabase connection error:', healthError);
+        console.error('loadHistory: Supabase connection error:', healthError);
+        console.error('loadHistory: Error details:', {
+          message: healthError.message,
+          code: healthError.code,
+          details: healthError.details,
+          hint: healthError.hint
+        });
+        
         if (healthError.message.includes('invalid api key')) {
           setError('Database authentication error. Please check your API key configuration.');
         } else if (healthError.message.includes('relation "history" does not exist')) {
@@ -48,9 +66,11 @@ export default function HistoryPage() {
         }
         return;
       }
+      
+      console.log('loadHistory: Connection test successful:', healthCheck);
 
       // If connection is good, proceed with the query
-      let query = supabase
+      let query = supabaseClient
         .from('history')
         .select('*')
         .order('created_at', { ascending: false });

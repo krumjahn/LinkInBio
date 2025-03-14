@@ -293,23 +293,32 @@ Remember to:
 
     // Save to Supabase history
     try {
-      await saveToHistory({
+      console.log('Saving title generation results to history...');
+      const historyRecord = {
         input: topic,
         output: JSON.stringify(titles),
-        type: 'title',
+        type: 'title' as const,
         metadata: {
           newsArticles: articles.length,
           suggestions: suggestions.length,
           generatedTitles: titles.length,
-          model: 'google/gemma-3-27b-it:free'
+          model: 'google/gemma-3-27b-it:free',
+          timestamp: new Date().toISOString()
         }
-      })
+      };
+      
+      console.log('History record to save:', historyRecord);
+      const savedRecord = await saveToHistory(historyRecord);
+      console.log('Successfully saved to history:', savedRecord);
     } catch (error: unknown) {
       // Log but don't fail if history saving fails
-      console.error(
-        'Error saving to history:', 
-        error instanceof Error ? error.message : 'Unknown error'
-      )
+      console.error('Error saving to history:');
+      if (error instanceof Error) {
+        console.error('Error message:', error.message);
+        console.error('Error stack:', error.stack);
+      } else {
+        console.error('Unknown error:', error);
+      }
     }
 
     return NextResponse.json({ 
