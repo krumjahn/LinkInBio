@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import Script from "next/script";
 import { MainNav } from "@/components/nav";
 import "./globals.css";
 
@@ -25,9 +26,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head />
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-background font-sans`}
       >
+        <Script
+          src="https://umami.rumjahn.synology.me/script.js"
+          data-website-id="f53cf938-91aa-4875-85d8-bd89f9c9da91"
+          strategy="afterInteractive"
+        />
         <div className="relative flex min-h-screen flex-col">
           <MainNav />
           <div className="flex-1">{children}</div>
