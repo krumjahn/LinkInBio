@@ -168,67 +168,77 @@ Remember to:
     let parseError: Error | null = null
     
     try {
-      // First try parsing as JSON
-      const jsonContent = JSON.parse(content)
-      if (Array.isArray(jsonContent)) {
-        titles = jsonContent.map(item => ({
-          title: item.title,
-          newsScore: item.news_score || item.newsScore,
-          searchScore: item.search_score || item.searchScore,
-          score: item.overall_score || item.score,
-          reasoning: item.reasoning
-        }))
-      }
-    } catch (e) {
-      parseError = e as Error
-      // If JSON parsing fails, try the text-based format
-      const blocks = content.split(/\n(?=Title:)/).filter(Boolean)
+      // Split by double newlines to separate titles more reliably
+      const blocks = content.split(/\n\s*\n/).filter(Boolean)
       
       for (const block of blocks) {
-        const lines = block.split('\n')
+        const lines = block.split('\n').map((line: string) => line.trim())
         let currentTitle: Partial<TitleSuggestion> = {}
+        let multilineReasoning = ''
+        let isReadingReasoning = false
 
         for (const line of lines) {
+          if (!line) continue
+
           if (line.startsWith('Title:')) {
-            currentTitle.title = line.replace('Title:', '').trim()
+            currentTitle.title = line.replace(/^Title:\s*/, '').trim()
           } else if (line.startsWith('NewsScore:')) {
-            currentTitle.newsScore = parseInt(line.replace('NewsScore:', '').trim(), 10)
+            const score = line.replace(/^NewsScore:\s*/, '').trim()
+            const numScore = parseInt(score.split(/[^0-9]/)[0], 10)
+            if (!isNaN(numScore) && numScore >= 0 && numScore <= 100) {
+              currentTitle.newsScore = numScore
+            }
           } else if (line.startsWith('SearchScore:')) {
-            currentTitle.searchScore = parseInt(line.replace('SearchScore:', '').trim(), 10)
+            const score = line.replace(/^SearchScore:\s*/, '').trim()
+            const numScore = parseInt(score.split(/[^0-9]/)[0], 10)
+            if (!isNaN(numScore) && numScore >= 0 && numScore <= 100) {
+              currentTitle.searchScore = numScore
+            }
           } else if (line.startsWith('OverallScore:')) {
-            currentTitle.score = parseInt(line.replace('OverallScore:', '').trim(), 10)
+            const score = line.replace(/^OverallScore:\s*/, '').trim()
+            const numScore = parseInt(score.split(/[^0-9]/)[0], 10)
+            if (!isNaN(numScore) && numScore >= 0 && numScore <= 100) {
+              currentTitle.score = numScore
+            }
           } else if (line.startsWith('Reasoning:')) {
-            currentTitle.reasoning = line.replace('Reasoning:', '').trim()
+            isReadingReasoning = true
+            multilineReasoning = line.replace(/^Reasoning:\s*/, '').trim()
+          } else if (isReadingReasoning) {
+            multilineReasoning += ' ' + line.trim()
           }
         }
 
+        // Set the complete reasoning
+        if (multilineReasoning) {
+          currentTitle.reasoning = multilineReasoning.trim()
+        }
+
+        // Validate and add the title if all required fields are present and valid
         if (currentTitle.title && 
-            typeof currentTitle.newsScore === 'number' && 
-            typeof currentTitle.searchScore === 'number' && 
-            typeof currentTitle.score === 'number' && 
+            typeof currentTitle.newsScore === 'number' && currentTitle.newsScore >= 0 && currentTitle.newsScore <= 100 &&
+            typeof currentTitle.searchScore === 'number' && currentTitle.searchScore >= 0 && currentTitle.searchScore <= 100 &&
+            typeof currentTitle.score === 'number' && currentTitle.score >= 0 && currentTitle.score <= 100 &&
             currentTitle.reasoning) {
           titles.push(currentTitle as TitleSuggestion)
         }
       }
-    }
-    
-    // Validate the parsed titles
-    titles = titles.filter(title => 
-      title.title && 
-      typeof title.newsScore === 'number' && 
-      typeof title.searchScore === 'number' && 
-      typeof title.score === 'number' && 
-      title.reasoning
-    )
 
-    if (titles.length === 0) {
-      console.error('No valid titles parsed from response')
-      console.error('Parse error:', parseError)
-      console.error('Raw content:', content)
-      throw new Error('Failed to parse valid titles from AI response')
+      if (titles.length === 0) {
+        console.error('No valid titles found in response');
+        console.error('Raw content:', content);
+        throw new Error('No valid titles could be parsed from the response. Please try again with a different topic.');
+      }
+    } catch (error: unknown) {
+      parseError = error instanceof Error ? error : new Error('Unknown error parsing AI response');
+      console.error('Error parsing AI response:', error);
+      console.error('Raw content:', content);
+      throw new Error(
+        'Failed to parse valid titles from AI response: ' + 
+        (error instanceof Error ? error.message : 'Unknown error')
+      );
     }
 
-    console.log('Parsed titles:', titles)
+    console.log('Successfully parsed titles:', titles)
 
     // Save to Supabase history
     try {
@@ -239,18 +249,32 @@ Remember to:
         metadata: {
           newsArticles: articles.length,
           suggestions: suggestions.length,
-          generatedTitles: titles.length
+          generatedTitles: titles.length,
+          model: 'google/gemma-3-27b-it:free'
         }
       })
-    } catch (error) {
+    } catch (error: unknown) {
       // Log but don't fail if history saving fails
-      console.error('Error saving to history:', error)
+      console.error(
+        'Error saving to history:', 
+        error instanceof Error ? error.message : 'Unknown error'
+      )
     }
-    return NextResponse.json({ titles })
-  } catch (error) {
-    console.error('Error generating titles:', error)
+
+    return NextResponse.json({ 
+      titles,
+      metadata: {
+        newsArticles: articles.length,
+        suggestions: suggestions.length
+      }
+    })
+  } catch (error: unknown) {
+    console.error(
+      'Error generating titles:', 
+      error instanceof Error ? error.message : 'Unknown error'
+    )
     return NextResponse.json(
-      { error: (error as Error).message || 'Failed to generate titles' },
+      { error: error instanceof Error ? error.message : 'Failed to generate titles' },
       { status: 500 }
     )
   }
