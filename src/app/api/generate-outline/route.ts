@@ -73,7 +73,7 @@ Make sure each section and subsection title is descriptive, engaging, and SEO-fr
           'X-Title': 'Content Tools'
         },
         body: JSON.stringify({
-          model: 'openai/gpt-3.5-turbo',
+          model: 'x-ai/grok-2-1212',
           messages: [
             {
               role: 'user',
@@ -155,7 +155,7 @@ Make sure each section and subsection title is descriptive, engaging, and SEO-fr
           title,
           topic,
           wordCount,
-          model: 'openai/gpt-3.5-turbo',
+          model: 'x-ai/grok-2-1212',
           timestamp: new Date().toISOString()
         }
       }

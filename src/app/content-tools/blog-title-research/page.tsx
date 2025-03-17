@@ -81,6 +81,8 @@ export default function BlogTitleResearcher() {
   const [outline, setOutline] = useState<ArticleOutline | null>(null)
   const [isGeneratingOutline, setIsGeneratingOutline] = useState(false)
   const [outlineError, setOutlineError] = useState<string | null>(null)
+  const [editingSectionIndex, setEditingSectionIndex] = useState<number | null>(null)
+  const [regeneratingSectionIndex, setRegeneratingSectionIndex] = useState<number | null>(null)
   
   // Article state
   const [article, setArticle] = useState<Article | null>(null)
@@ -166,6 +168,97 @@ export default function BlogTitleResearcher() {
       setOutlineError('An error occurred while generating the outline. Please try again.')
     } finally {
       setIsGeneratingOutline(false)
+    }
+  }
+
+  // Function to regenerate a specific section in the outline
+  const regenerateSection = async (sectionIndex: number) => {
+    if (!outline) return
+    
+    const section = outline.sections[sectionIndex]
+    if (!section) return
+    
+    setRegeneratingSectionIndex(sectionIndex)
+    
+    try {
+      console.log(`Regenerating section ${sectionIndex}: ${section.title}`)
+      
+      // Create a prompt specifically for regenerating this section
+      const prompt = `Generate 2-3 engaging subsections for the following section of a blog post about "${topic}" with the title "${outline.title}".
+
+Section title: "${section.title}"
+
+The subsections should be descriptive, engaging, and SEO-friendly. Return only the subsection titles as a JSON array of strings. For example: ["First Subsection Title", "Second Subsection Title", "Third Subsection Title"]`
+      
+      const response = await fetch('/api/regenerate-section', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          prompt,
+          topic,
+          sectionTitle: section.title
+        })
+      })
+      
+      const responseData = await response.json()
+      console.log('Section regeneration response:', responseData)
+      
+      if (responseData.subsections && Array.isArray(responseData.subsections)) {
+        // Update the outline with the new subsections
+        const updatedOutline = {...outline}
+        updatedOutline.sections[sectionIndex].subSections = responseData.subsections
+        setOutline(updatedOutline)
+      } else {
+        // Fallback if the API doesn't return the expected format
+        console.error('Invalid response format for section regeneration:', responseData)
+        // Create some generic subsections as fallback
+        const updatedOutline = {...outline}
+        updatedOutline.sections[sectionIndex].subSections = [
+          `Key aspects of ${section.title}`,
+          `How ${section.title} impacts your audience`,
+          `Best practices for ${section.title}`
+        ]
+        setOutline(updatedOutline)
+      }
+    } catch (error) {
+      console.error(`Error regenerating section ${sectionIndex}:`, error)
+      // Don't set a global error, just log it
+    } finally {
+      setRegeneratingSectionIndex(null)
+    }
+  }
+  
+  // Function to save the current outline to history
+  const saveOutlineToHistory = async () => {
+    if (!outline) return
+    
+    try {
+      console.log('Saving outline to history...')
+      const response = await fetch('/api/save-history', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          input: `${outline.title} - ${topic}`,
+          output: JSON.stringify(outline),
+          type: 'outline',
+          metadata: {
+            title: outline.title,
+            topic,
+            timestamp: new Date().toISOString()
+          }
+        })
+      })
+      
+      const responseData = await response.json()
+      console.log('Outline saved to history:', responseData)
+      return true
+    } catch (error) {
+      console.error('Error saving outline to history:', error)
+      return false
     }
   }
   
@@ -433,6 +526,12 @@ export default function BlogTitleResearcher() {
                       Back to Titles
                     </Button>
                     <Button 
+                      variant="outline"
+                      onClick={saveOutlineToHistory}
+                    >
+                      Save Outline
+                    </Button>
+                    <Button 
                       onClick={generateArticle} 
                       disabled={isGeneratingArticle}
                     >
@@ -470,12 +569,86 @@ export default function BlogTitleResearcher() {
                     <div className="space-y-4">
                       {outline.sections.map((section, index) => (
                         <div key={index} className="p-4 bg-gray-50 rounded-lg">
-                          <h5 className="font-medium mb-2">{section.title}</h5>
-                          <ul className="list-disc pl-5 space-y-1">
-                            {section.subSections.map((subSection, subIndex) => (
-                              <li key={subIndex} className="text-gray-700">{subSection}</li>
-                            ))}
-                          </ul>
+                          <div className="flex justify-between items-start mb-2">
+                            {editingSectionIndex === index ? (
+                              <input
+                                type="text"
+                                value={section.title}
+                                onChange={(e) => {
+                                  const updatedOutline = {...outline};
+                                  updatedOutline.sections[index].title = e.target.value;
+                                  setOutline(updatedOutline);
+                                }}
+                                className="flex-1 p-2 border border-gray-300 rounded font-medium text-base"
+                              />
+                            ) : (
+                              <h5 className="font-medium">{section.title}</h5>
+                            )}
+                            <div className="flex gap-2 ml-3">
+                              <button 
+                                onClick={() => setEditingSectionIndex(editingSectionIndex === index ? null : index)}
+                                className="text-xs px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded transition-colors"
+                              >
+                                {editingSectionIndex === index ? 'Done' : 'Edit'}
+                              </button>
+                              <button 
+                                onClick={() => {
+                                  setRegeneratingSectionIndex(index);
+                                  // Call API to regenerate just this section
+                                  regenerateSection(index);
+                                }}
+                                className="text-xs px-2 py-1 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded transition-colors"
+                                disabled={regeneratingSectionIndex === index}
+                              >
+                                {regeneratingSectionIndex === index ? (
+                                  <span className="flex items-center">
+                                    <svg className="animate-spin -ml-1 mr-1 h-3 w-3 text-blue-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    Regenerating...
+                                  </span>
+                                ) : 'Regenerate'}
+                              </button>
+                            </div>
+                          </div>
+                          
+                          {editingSectionIndex === index ? (
+                            <div className="mt-2 mb-3">
+                              {section.subSections.map((subSection, subIndex) => (
+                                <div key={subIndex} className="mb-2">
+                                  <input
+                                    type="text"
+                                    value={subSection}
+                                    onChange={(e) => {
+                                      const updatedOutline = {...outline};
+                                      updatedOutline.sections[index].subSections[subIndex] = e.target.value;
+                                      setOutline(updatedOutline);
+                                    }}
+                                    className="w-full p-2 border border-gray-300 rounded text-sm"
+                                  />
+                                </div>
+                              ))}
+                              <div className="flex justify-end gap-2 mt-2">
+                                <button
+                                  onClick={() => {
+                                    const updatedOutline = {...outline};
+                                    updatedOutline.sections[index].subSections.push('');
+                                    setOutline(updatedOutline);
+                                  }}
+                                  className="text-xs px-2 py-1 bg-green-100 hover:bg-green-200 text-green-700 rounded transition-colors"
+                                >
+                                  + Add Subsection
+                                </button>
+                              </div>
+                            </div>
+                          ) : (
+                            <ul className="list-disc pl-5 space-y-1">
+                              {section.subSections.map((subSection, subIndex) => (
+                                <li key={subIndex} className="text-gray-700">{subSection}</li>
+                              ))}
+                            </ul>
+                          )}
                         </div>
                       ))}
                     </div>

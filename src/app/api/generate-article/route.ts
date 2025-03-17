@@ -50,7 +50,7 @@ export async function POST(request: Request) {
 
     // Calculate approximate word count per section
     const totalSections = outline.sections.reduce(
-      (count, section) => count + 1 + section.subSections.length, 
+      (count: number, section: OutlineSection) => count + 1 + section.subSections.length, 
       0
     ) + 2 // +2 for intro and conclusion
     
@@ -64,54 +64,66 @@ export async function POST(request: Request) {
     const mainSectionWords = wordsPerSection
     const subSectionWords = wordsPerSection
 
-    const prompt = `You are a professional blog writer. Write a ${wordCount}-word blog article based on the following outline about the topic: "${topic}".
+    const prompt = `You are a master blog writer. Write a blog article on the topic "${topic}" based on the following outline:
 
 TITLE: ${outline.title}
 
 OUTLINE:
-Introduction: ${outline.introduction} (approximately ${introWords} words)
+Introduction:
+WHAT: This is about ${outline.introduction}
+WHO: This piece is for readers interested in ${topic}
+PROMISE: By the time you finish reading this piece, you will understand ${outline.introduction}
+CREDIBILITY: I have researched and compiled the most relevant information on ${topic}
 
-${outline.sections.map((section, i) => `
-Section ${i+1}: ${section.title}
-${section.subSections.map((sub, j) => `- Subsection ${i+1}.${j+1}: ${sub}`).join('\n')}
+${outline.sections.map((section: OutlineSection, i: number) => `
+Point ${i+1}: ${section.title}
+${section.subSections.map((sub: string) => `- ${sub}`).join('\n')}
 `).join('\n')}
 
-Conclusion: ${outline.conclusion} (approximately ${conclusionWords} words)
+Conclusion: ${outline.conclusion}
+CTA: Learn more about ${topic} and apply these insights
+
+A few rules:
+Introduce the topic. Use short punchy sentences. Keep the line spacing.
+Use this format:
+In 1 sentence, make a strong declarative statement about the topic.
+In 3-5 sentences, describe why there is a problem, why it needs to be solved. And that we are going to solve it.
+In 1 sentence, tell the reader what you are going to talk about and point out the benefits for reading.
+
+Write each section.
+Use this format:
+In 1 sentence, introduce a common problem your target audience related to this section.
+In 1 sentence, explain the reason this is an issue.
+In 3 short bullets, offer surprising or counterintuitive tips to solve it.
+In 1 sentence, point out the big benefit for following the tips.
+In 3 sentences, give a fact, story, or example that proves the section point.
+In 1 sentence, tell why the fact, story, or example matters to the section point.
+In 2 sentences, wrap up with a poignant takeaway that reinforces the section point.
+In 1 sentence, setup what's coming next, making the flow coherent.
+
+Finally, at the very end, give the reader 1 final takeaway.
+
+Please: Avoid jargon. Get to the point. Avoid fluff. Use markdown to format the post. Use a simple, clear, direct, and relatable tone. The post should flow naturally from point to point. Bias toward short, concise sentences (12 words max per sentence).
 
 FORMAT INSTRUCTIONS:
-1. Write the full article following the exact structure of the outline
-2. For each section and subsection, include the exact title from the outline
-3. Format the response as a JSON object with this structure:
+Format the response as a JSON object with this structure:
 {
-  "title": "The exact title",
-  "introduction": "Full introduction text",
+  "title": "${outline.title}",
+  "introduction": "Full introduction text following the format above",
   "sections": [
     {
-      "title": "Section 1 Title",
-      "content": "Main section content",
+      "title": "Section Title",
+      "content": "Main section content following the format above",
       "subSections": [
         {
-          "title": "Subsection 1.1 Title",
-          "content": "Subsection content"
-        },
-        {
-          "title": "Subsection 1.2 Title",
+          "title": "Subsection Title",
           "content": "Subsection content"
         }
       ]
     }
   ],
-  "conclusion": "Full conclusion text"
-}
-
-WRITING GUIDELINES:
-- Make the content engaging, informative, and well-researched
-- Include relevant statistics, examples, and quotes where appropriate
-- Use a conversational but professional tone
-- Ensure the content flows logically between sections
-- Include appropriate transition phrases between sections
-- Aim for approximately ${mainSectionWords} words for main section content and ${subSectionWords} words for each subsection
-- Write in a way that demonstrates expertise on the topic`
+  "conclusion": "Full conclusion text with final takeaway"
+}`
 
     console.log('Generating article with prompt:', prompt)
 
@@ -127,7 +139,7 @@ WRITING GUIDELINES:
           'X-Title': 'Content Tools'
         },
         body: JSON.stringify({
-          model: 'openai/gpt-3.5-turbo',
+          model: 'x-ai/grok-2-1212',
           messages: [
             {
               role: 'user',
@@ -218,7 +230,7 @@ WRITING GUIDELINES:
           title: article.title,
           topic,
           wordCount,
-          model: 'openai/gpt-3.5-turbo',
+          model: 'x-ai/grok-2-1212',
           timestamp: new Date().toISOString()
         }
       }

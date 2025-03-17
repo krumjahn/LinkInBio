@@ -226,7 +226,7 @@ TITLE CREATION GUIDELINES:
             'X-Title': 'Content Tools'
           },
           body: JSON.stringify({
-            model: 'openai/gpt-3.5-turbo',
+            model: 'x-ai/grok-2-1212',
             messages: [
               {
                 role: 'user',
@@ -332,7 +332,7 @@ TITLE CREATION GUIDELINES:
           titleType,
           newsArticles: newsArticles.length,
           searchSuggestions: searchSuggestions.length,
-          model: 'openai/gpt-3.5-turbo',
+          model: 'x-ai/grok-2-1212',
           timestamp: new Date().toISOString()
         }
       })

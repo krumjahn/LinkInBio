@@ -143,15 +143,15 @@ export interface HistoryRecord {
   created_at?: string;
   input: string;
   output: string;
-  type: 'news' | 'title' | 'suggestion';
+  type: 'news' | 'title' | 'suggestion' | 'outline';
   metadata?: Record<string, any>;
 }
 
 export async function saveToHistory(record: Omit<HistoryRecord, 'id' | 'created_at'>) {
   try {
-    // Only save title generation history, not news analysis
-    if (record.type !== 'title') {
-      console.log('Skipping save to history for non-title record type:', record.type);
+    // Only save title generation, outline, and suggestion history, not news analysis
+    if (record.type !== 'title' && record.type !== 'outline' && record.type !== 'suggestion') {
+      console.log('Skipping save to history for unsupported record type:', record.type);
       return null;
     }
     
