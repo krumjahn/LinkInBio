@@ -5,7 +5,6 @@ import { Button } from "../../../../components/ui/button"
 import { Card } from "../../../../components/ui/card"
 import { GlowEffect } from "../../../../components/ui/glow-effect"
 import Link from "next/link"
-import axios from 'axios'
 import { motion } from 'framer-motion'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faWandMagicSparkles } from '@fortawesome/free-solid-svg-icons'

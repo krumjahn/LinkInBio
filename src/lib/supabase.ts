@@ -149,8 +149,14 @@ export interface HistoryRecord {
 
 export async function saveToHistory(record: Omit<HistoryRecord, 'id' | 'created_at'>) {
   try {
+    // Only save title generation history, not news analysis
+    if (record.type !== 'title') {
+      console.log('Skipping save to history for non-title record type:', record.type);
+      return null;
+    }
+    
     // Validate the record before attempting any operations
-    if (!record.input || !record.output || !record.type) {
+    if (!record.input || !record.output) {
       throw new Error('Invalid history record: missing required fields');
     }
 
@@ -186,7 +192,7 @@ export async function saveToHistory(record: Omit<HistoryRecord, 'id' | 'created_
     }
 
     // Validate the record before insertion
-    if (!record.input || !record.output || !record.type) {
+    if (!record.input || !record.output) {
       throw new Error('Invalid history record: missing required fields');
     }
 

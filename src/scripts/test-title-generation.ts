@@ -1,5 +1,5 @@
 // Test script for title generation and history saving
-import axios from 'axios';
+// Using fetch instead of axios
 import { getHistory } from '../lib/supabase';
 
 async function main() {
@@ -29,11 +29,22 @@ async function main() {
   
   try {
     console.log(`Generating titles for topic: "${topic}"`);
-    const response = await axios.post('http://localhost:3000/api/generate-titles', { topic });
+    const response = await fetch('http://localhost:3000/api/generate-titles', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ topic })
+    });
     
+    if (!response.ok) {
+      throw new Error(`API returned ${response.status}`);
+    }
+    
+    const data = await response.json();
     console.log('Title generation successful!');
-    console.log(`Generated ${response.data.titles.length} titles`);
-    console.log('First title:', response.data.titles[0]);
+    console.log(`Generated ${data.titles.length} titles`);
+    console.log('First title:', data.titles[0]);
     
     // 3. Verify the new record was saved to history
     console.log('\n3. Verifying history was updated...');

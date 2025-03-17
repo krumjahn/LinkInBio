@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server'
-import axios from 'axios'
 import { supabase, saveToHistory, initializeDatabase } from '@/lib/supabase'
 
 const NEWS_API_KEY = 'e0a665da9488411580cac8e79e8d114f'
@@ -19,40 +18,52 @@ export async function GET(request: Request) {
     console.log('Fetching news for query:', query)
     // Try top headlines first
     let url = `https://newsapi.org/v2/top-headlines?q=${encodeURIComponent(query)}&pageSize=5&language=en`
-    let response = await axios.get(url, {
+    let response = await fetch(url, {
       headers: {
         'X-Api-Key': NEWS_API_KEY
       }
     })
 
+    if (!response.ok) {
+      throw new Error(`NewsAPI returned ${response.status}`)
+    }
+    
+    let data = await response.json()
+
     // If no top headlines, fall back to everything endpoint
-    if (!response.data.articles?.length) {
+    if (!data.articles?.length) {
       url = `https://newsapi.org/v2/everything?q=${encodeURIComponent(query)}&sortBy=relevancy&pageSize=5&language=en`
-      response = await axios.get(url, {
+      response = await fetch(url, {
         headers: {
           'X-Api-Key': NEWS_API_KEY
         }
       })
+      
+      if (!response.ok) {
+        throw new Error(`NewsAPI returned ${response.status}`)
+      }
+      
+      data = await response.json()
     }
     console.log('NewsAPI URL:', url)
 
     console.log('Using URL:', url)
-    console.log('Found articles:', response.data.articles?.length || 0)
+    console.log('Found articles:', data.articles?.length || 0)
 
-    console.log('NewsAPI response:', response.data)
+    console.log('NewsAPI response:', data)
     
     // Save to Supabase history
     await saveToHistory({
       input: query,
-      output: JSON.stringify(response.data.articles),
+      output: JSON.stringify(data.articles),
       type: 'news',
       metadata: {
         url: url,
-        articleCount: response.data.articles?.length || 0
+        articleCount: data.articles?.length || 0
       }
     })
 
-    return NextResponse.json({ articles: response.data.articles })
+    return NextResponse.json({ articles: data.articles })
   } catch (error: any) {
     console.error('Error fetching news:', error)
     console.error('Error details:', {

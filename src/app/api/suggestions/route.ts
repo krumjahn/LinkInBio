@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server'
-import axios from 'axios'
 import * as xml2js from 'xml2js'
 
 export async function GET(request: Request) {
@@ -11,7 +10,7 @@ export async function GET(request: Request) {
   }
 
   try {
-    const response = await axios.get(
+    const response = await fetch(
       `https://suggestqueries.google.com/complete/search?output=toolbar&hl=en&q=${encodeURIComponent(query)}`,
       {
         headers: {
@@ -20,9 +19,14 @@ export async function GET(request: Request) {
       }
     )
 
+    if (!response.ok) {
+      throw new Error(`Google API returned ${response.status}`)
+    }
+
     // Parse XML response
     const parser = new xml2js.Parser()
-    const result = await parser.parseStringPromise(response.data)
+    const responseText = await response.text()
+    const result = await parser.parseStringPromise(responseText)
     interface GoogleSuggestion {
       suggestion: [{ $: { data: string } }]
     }
@@ -33,9 +37,19 @@ export async function GET(request: Request) {
       }
     }
 
-    const suggestions = (result as GoogleResponse).toplevel?.CompleteSuggestion?.map(
-      (item) => item.suggestion[0].$.data
-    ).filter(Boolean) || []
+    // Safely extract suggestions with better error handling
+    let suggestions: string[] = []
+    try {
+      if (result && result.toplevel && result.toplevel.CompleteSuggestion) {
+        suggestions = result.toplevel.CompleteSuggestion.map(
+          (item) => item.suggestion[0].$.data
+        ).filter(Boolean)
+      } else {
+        console.log('No suggestions found in Google response')
+      }
+    } catch (error) {
+      console.error('Error extracting suggestions:', error)
+    }
 
     // Generate news-style suggestions
     const newsTemplates = [
