@@ -103,7 +103,28 @@ In 1 sentence, setup what's coming next, making the flow coherent.
 
 Finally, at the very end, give the reader 1 final takeaway.
 
-Please: Avoid jargon. Get to the point. Avoid fluff. Use markdown to format the post. Use a simple, clear, direct, and relatable tone. The post should flow naturally from point to point. Bias toward short, concise sentences (12 words max per sentence).
+TONE GUIDELINES:
+- Conversational and approachable: Use a friendly, informal tone that feels like a one-on-one conversation.
+- Authoritative yet humble: Draw from personal experiences and industry knowledge to establish credibility, while maintaining humility.
+- Visionary and forward-thinking: Present innovative ideas and future trends with confidence, challenging conventional wisdom.
+- Anecdotal: Incorporate personal stories and real-world examples to illustrate points and make concepts relatable.
+- Concise and impactful: Use short, punchy sentences (12 words max) and brief paragraphs to maintain engagement.
+- Thought-provoking: Pose questions and present ideas that challenge readers to think differently.
+- Passionate and inspiring: Convey genuine enthusiasm for the subject, aiming to motivate and excite the reader.
+- Tech-savvy: Demonstrate understanding of technology trends when relevant to the topic.
+- Business-oriented: Focus on practical applications, strategies, and market dynamics when applicable.
+- Slightly informal: Use contractions and occasional colloquial phrases to maintain an accessible tone.
+- Name-dropping: Reference relevant well-known figures and companies to add context and credibility.
+- Metaphorical: Use analogies and comparisons to explain complex ideas in simpler terms.
+
+When writing, aim to:
+- Start with a hook or provocative statement
+- Use personal anecdotes to illustrate larger points
+- Incorporate current trends and cutting-edge concepts when relevant
+- Challenge existing paradigms and present innovative solutions
+- Conclude with forward-looking statements or calls to action
+
+The tone should resonate with entrepreneurs, tech enthusiasts, and business professionals while remaining accessible to a general audience interested in innovation and future trends.
 
 FORMAT INSTRUCTIONS:
 Format the response as a JSON object with this structure:
