@@ -41,7 +41,7 @@ export default function Home() {
           </Button>
 
           <Button variant="outline" className="w-full" asChild>
-            <Link href="https://n8n.rumjahn.com/form/80be3272-e1bc-47e4-8112-d39488e84f4b">
+            <Link href="https://primary-production-2a3f.up.railway.app/form/80be3272-e1bc-47e4-8112-d39488e84f4b">
               Join my newsletter
             </Link>
           </Button>
@@ -53,14 +53,8 @@ export default function Home() {
           </Button>
 
           <Button variant="outline" className="w-full" asChild>
-            <Link href="https://2828633406999.gumroad.com/l/rumjahn">
+            <Link href="https://seo.rumjahn.com/">
               n8n SEO A.I. System
-            </Link>
-          </Button>
-
-          <Button variant="outline" className="w-full" asChild>
-            <Link href="/content-tools">
-              Content Generation Tools
             </Link>
           </Button>
         </div>
@@ -72,7 +66,7 @@ export default function Home() {
             </svg>
           </Link>
           
-          <Link href="https://www.facebook.com/keithrumjahn/" className="text-muted-foreground hover:text-foreground transition-colors">
+          <Link href="https://www.facebook.com/rumjahn" className="text-muted-foreground hover:text-foreground transition-colors">
             <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path fillRule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" clipRule="evenodd" />
             </svg>

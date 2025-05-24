@@ -94,7 +94,7 @@ async function fetchGoogleSuggestions(topic: string): Promise<string[]> {
 
 export async function POST(request: Request) {
   try {
-    const { topic, titleType = 'blog' } = await request.json()
+    const { topic, titleType = 'blog', additionalContext, brandVoice } = await request.json()
 
     if (!topic) {
       return NextResponse.json({ error: 'Topic is required' }, { status: 400 })
@@ -184,6 +184,14 @@ ${searchContext}
 
 TITLE TYPE: ${titleType}
 ${titleTypePrompt}
+${additionalContext ? `
+ADDITIONAL CONTEXT:
+${additionalContext}
+` : ''}
+${brandVoice ? `
+BRAND VOICE:
+${brandVoice}
+` : ''}
 
 TASK:
 Generate ${titleCount} unique, engaging titles for the topic "${topic}" that will perform well in both search and social media.
@@ -332,6 +340,8 @@ TITLE CREATION GUIDELINES:
           titleType,
           newsArticles: newsArticles.length,
           searchSuggestions: searchSuggestions.length,
+          additionalContext: additionalContext || undefined,
+          brandVoice: brandVoice || undefined,
           model: 'x-ai/grok-2-1212',
           timestamp: new Date().toISOString()
         }

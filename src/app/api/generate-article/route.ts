@@ -38,7 +38,7 @@ interface Article {
 
 export async function POST(request: Request) {
   try {
-    const { outline, topic, wordCount = 2000 } = await request.json()
+    const { outline, topic, wordCount = 2000, additionalContext, brandVoice } = await request.json()
 
     if (!outline || !outline.title || !outline.sections) {
       return NextResponse.json({ error: 'Valid outline is required' }, { status: 400 })
@@ -74,6 +74,8 @@ WHAT: This is about ${outline.introduction}
 WHO: This piece is for readers interested in ${topic}
 PROMISE: By the time you finish reading this piece, you will understand ${outline.introduction}
 CREDIBILITY: I have researched and compiled the most relevant information on ${topic}
+${additionalContext ? `
+ADDITIONAL CONTEXT: ${additionalContext}` : ''}
 
 ${outline.sections.map((section: OutlineSection, i: number) => `
 Point ${i+1}: ${section.title}
@@ -103,7 +105,8 @@ In 1 sentence, setup what's coming next, making the flow coherent.
 
 Finally, at the very end, give the reader 1 final takeaway.
 
-TONE GUIDELINES:
+TONE GUIDELINES:${brandVoice ? `
+${brandVoice}` : `
 - Conversational and approachable: Use a friendly, informal tone that feels like a one-on-one conversation.
 - Authoritative yet humble: Draw from personal experiences and industry knowledge to establish credibility, while maintaining humility.
 - Visionary and forward-thinking: Present innovative ideas and future trends with confidence, challenging conventional wisdom.
@@ -115,7 +118,7 @@ TONE GUIDELINES:
 - Business-oriented: Focus on practical applications, strategies, and market dynamics when applicable.
 - Slightly informal: Use contractions and occasional colloquial phrases to maintain an accessible tone.
 - Name-dropping: Reference relevant well-known figures and companies to add context and credibility.
-- Metaphorical: Use analogies and comparisons to explain complex ideas in simpler terms.
+- Metaphorical: Use analogies and comparisons to explain complex ideas in simpler terms.`}
 
 When writing, aim to:
 - Start with a hook or provocative statement
@@ -148,7 +151,7 @@ Format the response as a JSON object with this structure:
 
     console.log('Generating article with prompt:', prompt)
 
-    // Call OpenRouter API (using Gemma model)
+    // Call OpenRouter API (using Grok model)
     const response = await fetch(
       'https://openrouter.ai/api/v1/chat/completions',
       {

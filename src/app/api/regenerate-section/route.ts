@@ -9,7 +9,7 @@ if (!OPENROUTER_API_KEY) {
 
 export async function POST(request: Request) {
   try {
-    const { prompt, topic, sectionTitle } = await request.json()
+    const { prompt, topic, sectionTitle, additionalContext, brandVoice } = await request.json()
 
     if (!prompt) {
       return NextResponse.json({ error: 'Prompt is required' }, { status: 400 })
@@ -41,7 +41,9 @@ export async function POST(request: Request) {
           messages: [
             {
               role: 'user',
-              content: prompt
+              content: brandVoice ? `${prompt}
+
+Brand Voice: ${brandVoice}` : prompt
             }
           ]
         })

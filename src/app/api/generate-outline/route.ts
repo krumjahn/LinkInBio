@@ -22,7 +22,7 @@ interface ArticleOutline {
 
 export async function POST(request: Request) {
   try {
-    const { title, topic, wordCount = 2000 } = await request.json()
+    const { title, topic, wordCount = 2000, additionalContext, brandVoice } = await request.json()
 
     if (!title) {
       return NextResponse.json({ error: 'Title is required' }, { status: 400 })
@@ -33,6 +33,12 @@ export async function POST(request: Request) {
     }
 
     const prompt = `You are a professional content outline creator. Create a detailed outline for a ${wordCount}-word blog article with the title: "${title}" about the topic: "${topic}".
+${additionalContext ? `
+Additional Context: ${additionalContext}
+` : ''}
+${brandVoice ? `
+Brand Voice: ${brandVoice}
+` : ''}
 
 The outline should include:
 1. An engaging introduction (summarize what this will cover)
@@ -155,6 +161,8 @@ Make sure each section and subsection title is descriptive, engaging, and SEO-fr
           title,
           topic,
           wordCount,
+          additionalContext: additionalContext || undefined,
+          brandVoice: brandVoice || undefined,
           model: 'x-ai/grok-2-1212',
           timestamp: new Date().toISOString()
         }
