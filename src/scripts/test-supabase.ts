@@ -56,8 +56,11 @@ async function testSupabaseConnection() {
 
     // Test 3: Configuration check
     console.log('\nTest 3: Configuration Check');
-    console.log('URL:', supabase.supabaseUrl);
-    console.log('API Key (first 10 chars):', supabase.supabaseKey.substring(0, 10) + '...');
+    // Import supabaseUrl and supabaseServiceKey from the module
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const { supabaseUrl, supabaseServiceKey } = require('../lib/supabase');
+    console.log('URL:', supabaseUrl);
+    console.log('API Key (first 10 chars):', supabaseServiceKey.substring(0, 10) + '...');
 
   } catch (error) {
     console.error('Unexpected error during tests:', error);
