@@ -42,7 +42,7 @@ export async function GET(request: Request) {
     try {
       if (result && result.toplevel && result.toplevel.CompleteSuggestion) {
         suggestions = result.toplevel.CompleteSuggestion.map(
-          (item) => item.suggestion[0].$.data
+          (item: GoogleSuggestion) => item.suggestion[0].$.data
         ).filter(Boolean)
       } else {
         console.log('No suggestions found in Google response')
