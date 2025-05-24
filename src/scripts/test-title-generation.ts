@@ -70,8 +70,8 @@ async function main() {
     
   } catch (error) {
     console.error('Error generating titles:', error);
-    if (error.response) {
-      console.error('Response error data:', error.response.data);
+    if (error && typeof error === 'object' && 'response' in error) {
+      console.error('Response error data:', (error as any).response?.data);
     }
   }
 }
