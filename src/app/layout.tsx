@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Script from "next/script";
-import { MainNav } from "@/components/nav";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -36,7 +35,7 @@ export default function RootLayout({
           strategy="afterInteractive"
         />
         <div className="relative flex min-h-screen flex-col">
-          <MainNav />
+          {/* <MainNav /> */}
           <div className="flex-1">{children}</div>
         </div>
       </body>
