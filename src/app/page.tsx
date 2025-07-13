@@ -41,7 +41,7 @@ export default function Home() {
           </Button>
 
           <Button variant="outline" className="w-full" asChild>
-            <Link href="https://primary-production-2a3f.up.railway.app/form/80be3272-e1bc-47e4-8112-d39488e84f4b">
+            <Link href="https://rumjahn.substack.com/">
               Join my newsletter
             </Link>
           </Button>
