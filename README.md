@@ -1,24 +1,102 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Personal Links Page
+
+A clean, modern personal links page built with Next.js and Tailwind CSS.
+
+## Features
+
+- **Responsive Design**: Mobile-first approach with modern UI/UX
+- **Social Media Integration**: Links to various social platforms
+- **Fast Loading**: Optimized for performance with Next.js
+- **Modern Styling**: Built with Tailwind CSS and shadcn/ui components
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18+ 
+- npm or yarn
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   cd personal-links
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Run the development server:
+   ```bash
+   npm run dev
+   ```
+
+4. Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+### Build for Production
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run build
+npm start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Customization
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Adding New Links
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Edit `src/app/page.tsx` to add or modify links:
+
+```tsx
+<Button variant="outline" className="w-full" asChild>
+  <Link href="https://your-link.com">
+    Your Link Text
+  </Link>
+</Button>
+```
+
+### Changing Profile Information
+
+Update the profile section in `src/app/page.tsx`:
+
+```tsx
+<h1 className="text-2xl font-bold">Your Name</h1>
+<p className="text-muted-foreground mt-2">Your bio/description</p>
+```
+
+### Updating Social Media Links
+
+Modify the social media section in `src/app/page.tsx` to add or change social links.
+
+### Changing the Profile Image
+
+Replace `/public/keith.jpg` with your own image and update the reference in `src/app/page.tsx`.
+
+## Tech Stack
+
+- **Framework**: Next.js 15
+- **Styling**: Tailwind CSS
+- **UI Components**: shadcn/ui (Radix UI)
+- **TypeScript**: For type safety
+- **Icons**: Custom SVG icons
+
+## Project Structure
+
+```
+src/
+├── app/
+│   ├── globals.css
+│   ├── layout.tsx
+│   └── page.tsx
+├── components/
+│   └── ui/
+│       ├── button.tsx
+│       └── card.tsx
+└── lib/
+    └── utils.ts
+```
 
 ## Learn More
 
@@ -26,8 +104,6 @@ To learn more about Next.js, take a look at the following resources:
 
 - [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
 - [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
 ## Deploy on Railway
 
