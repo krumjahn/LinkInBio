@@ -81,7 +81,7 @@ export default function Home() {
               <Link href="https://nas.io/portal/challenges/manage?id=691b21644a053b1e64105628" className="block rounded-xl bg-white p-4 text-left shadow-md">
                 <div className="flex items-start gap-4">
                   <Image
-                    src={`/ai-course.png?v=${Date.now()}`}
+                    src="/ai-course.png"
                     alt="A.I. Coding Automation Course"
                     width={64}
                     height={64}
