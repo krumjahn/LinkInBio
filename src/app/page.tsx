@@ -78,7 +78,7 @@ export default function Home() {
           <h2 className="text-xl font-semibold text-gray-800">Resources</h2>
           <div className="mt-4 space-y-4">
             <motion.div whileHover={{ scale: 1.05 }}>
-              <Link href="https://nas.io/portal/challenges/manage?id=691b21644a053b1e64105628" className="block rounded-xl bg-white p-4 text-left shadow-md">
+              <Link href="https://nas.io/rumjahn/challenges/master-vibe-coding-in-14-days-and-make-money-with-a-i-cohort-4-copy" className="block rounded-xl bg-white p-4 text-left shadow-md">
                 <div className="flex items-start gap-4">
                   <Image
                     src="/ai-course.png"
