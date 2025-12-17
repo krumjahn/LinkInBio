@@ -2,6 +2,10 @@
   "name": "personal-links",
   "version": "1.0.0",
   "private": true,
+  "engines": {
+    "node": ">=18.18 <23",
+    "npm": ">=9"
+  },
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
