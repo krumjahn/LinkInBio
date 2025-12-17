@@ -1,55 +1,34 @@
-'use client'
-
 import { Instagram, Linkedin, Twitter, Youtube, ArrowRight, ExternalLink } from 'lucide-react'
 
 import Image from "next/image"
 import Link from "next/link"
-import { motion } from 'framer-motion'
 
 export default function Home() {
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-    },
-  };
-
   const links = [
     {
       title: "Join my community",
-      icon: "/globe.svg", // Placeholder, will use Lucide if image not available or prefer consistent icons
+      icon: "/globe.svg",
       url: "https://nas.io/rumjahn",
       btnText: "Join Now",
       description: ""
     },
     {
       title: "Youtube Channel",
-      icon: "/window.svg", // Placeholder
+      icon: "/window.svg",
       url: "https://www.youtube.com/@LearnAIAutomation",
       btnText: "Watch",
       description: ""
     },
     {
       title: "My Newsletter",
-      icon: "/file.svg", // Placeholder
+      icon: "/file.svg",
       url: "https://rumjahn.substack.com/",
       btnText: "Subscribe",
       description: ""
     },
     {
       title: "My Blog",
-      icon: "/globe.svg", // Placeholder
+      icon: "/globe.svg",
       url: "https://rumjahn.com",
       btnText: "Read",
       description: ""
@@ -82,17 +61,9 @@ export default function Home() {
 
   return (
     <main className="min-h-screen w-full bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <motion.div 
-        className="mx-auto max-w-2xl"
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-      >
+      <div className="mx-auto max-w-2xl">
         {/* Profile Section */}
-        <motion.div 
-          className="flex flex-col items-center text-center mb-12"
-          variants={itemVariants}
-        >
+        <div className="flex flex-col items-center text-center mb-12">
           <div className="relative mb-6">
             <div className="absolute inset-0 rounded-full bg-brand blur-md opacity-20 transform translate-y-2"></div>
             <Image
@@ -124,19 +95,18 @@ export default function Home() {
                <Twitter className="h-6 w-6" />
              </Link>
           </div>
-        </motion.div>
+        </div>
 
         {/* Links Section - Styled as Product Cards */}
         <div className="space-y-6">
-          <motion.h2 className="text-xl font-bold text-gray-900 mb-4" variants={itemVariants}>Quick Links</motion.h2>
+          <h2 className="text-xl font-bold text-gray-900 mb-4">Quick Links</h2>
           
           {links.map((link, index) => (
-            <motion.div key={index} variants={itemVariants} whileHover={{ y: -2 }} className="group">
+            <div key={index} className="group transition-transform hover:-translate-y-0.5">
               <Link href={link.url} target="_blank" className="block bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300">
                 <div className="flex items-center justify-between gap-4">
                   <div className="flex items-center gap-4">
                     <div className="bg-gray-50 p-2 rounded-lg group-hover:bg-brand/10 transition-colors">
-                       {/* Using a generic icon if svg not ideal, but keeping consistent structure */}
                        <ExternalLink className="h-6 w-6 text-gray-600 group-hover:text-brand" />
                     </div>
                     <span className="font-semibold text-gray-900">{link.title}</span>
@@ -147,13 +117,13 @@ export default function Home() {
                   <ArrowRight className="sm:hidden h-5 w-5 text-gray-400 group-hover:text-brand" />
                 </div>
               </Link>
-            </motion.div>
+            </div>
           ))}
 
-          <motion.h2 className="text-xl font-bold text-gray-900 mt-12 mb-4" variants={itemVariants}>Featured Products</motion.h2>
+          <h2 className="text-xl font-bold text-gray-900 mt-12 mb-4">Featured Products</h2>
           
           {products.map((product, index) => (
-            <motion.div key={index} variants={itemVariants} whileHover={{ y: -2 }} className="group">
+            <div key={index} className="group transition-transform hover:-translate-y-0.5">
               <Link href={product.url} target="_blank" className="block bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300">
                 <div className="flex flex-col sm:flex-row sm:items-center gap-5">
                   <div className="flex-shrink-0">
@@ -176,14 +146,14 @@ export default function Home() {
                   </div>
                 </div>
               </Link>
-            </motion.div>
+            </div>
           ))}
         </div>
         
-        <motion.div className="mt-16 text-center text-sm text-gray-400" variants={itemVariants}>
+        <div className="mt-16 text-center text-sm text-gray-400">
           <p>© {new Date().getFullYear()} Keith Rumjahn. All rights reserved.</p>
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
     </main>
   )
 }
