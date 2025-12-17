@@ -1,6 +1,6 @@
 'use client'
 
-import { Cpu, Heart, Instagram, Linkedin, Twitter, Youtube } from 'lucide-react'
+import { Instagram, Linkedin, Twitter, Youtube, ArrowRight, ExternalLink } from 'lucide-react'
 
 import Image from "next/image"
 import Link from "next/link"
@@ -25,142 +25,163 @@ export default function Home() {
     },
   };
 
+  const links = [
+    {
+      title: "Join my community",
+      icon: "/globe.svg", // Placeholder, will use Lucide if image not available or prefer consistent icons
+      url: "https://nas.io/rumjahn",
+      btnText: "Join Now",
+      description: ""
+    },
+    {
+      title: "Youtube Channel",
+      icon: "/window.svg", // Placeholder
+      url: "https://www.youtube.com/@LearnAIAutomation",
+      btnText: "Watch",
+      description: ""
+    },
+    {
+      title: "My Newsletter",
+      icon: "/file.svg", // Placeholder
+      url: "https://rumjahn.substack.com/",
+      btnText: "Subscribe",
+      description: ""
+    },
+    {
+      title: "My Blog",
+      icon: "/globe.svg", // Placeholder
+      url: "https://rumjahn.com",
+      btnText: "Read",
+      description: ""
+    }
+  ];
+
+  const products = [
+    {
+      title: "Learn A.I. coding",
+      description: "Learn to build an app that makes money",
+      image: "/ai-course.png",
+      url: "https://nas.io/rumjahn/challenges/master-vibe-coding-in-14-days-and-make-money-with-a-i-cohort-4-copy",
+      btnText: "Enroll Now"
+    },
+    {
+      title: "Health Data A.I. analyzer",
+      description: "Use A.I. to unlock insights",
+      image: "/appicon.png",
+      url: "https://applehealthdata.com/",
+      btnText: "Download"
+    },
+    {
+      title: "n8n SEO A.I. System",
+      description: "Automate your SEO workflow",
+      image: "/Gemini_Generated_Image_1fbvfd1fbvfd1fbv.png",
+      url: "https://seo.rumjahn.com/",
+      btnText: "Buy Now"
+    }
+  ];
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-cyan-100 px-4 py-12 pt-24">
+    <main className="min-h-screen w-full bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <motion.div 
-        className="relative mx-auto w-full max-w-md rounded-2xl bg-white/80 p-8 text-center shadow-lg backdrop-blur-sm"
+        className="mx-auto max-w-2xl"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
       >
-        
+        {/* Profile Section */}
         <motion.div 
-          className="absolute -top-16 inset-x-0 flex justify-center"
+          className="flex flex-col items-center text-center mb-12"
           variants={itemVariants}
         >
-          <Image
-            src="/keith.jpg"
-            alt="Profile"
-            width={128}
-            height={128}
-            className="h-32 w-32 rounded-full border-4 border-white object-cover shadow-md"
-            priority
-          />
-        </motion.div>
-        
-        <motion.h1 className="mt-16 text-3xl font-bold tracking-tight text-gray-900" variants={itemVariants}>Keith Rumjahn</motion.h1>
-        <motion.p className="mt-2 text-gray-600" variants={itemVariants}>I talk about A.I. to improve your life. Top 50 verified n8n creator globally 🌍</motion.p>
-
-        <motion.div className="mt-8 space-y-4" variants={itemVariants}>
-          <motion.div whileHover={{ scale: 1.05 }}>
-            <Link href="https://nas.io/rumjahn" className="block rounded-full bg-indigo-600 px-6 py-3 font-semibold text-white shadow-md">
-              Join my community
-            </Link>
-          </motion.div>
-          <motion.div whileHover={{ scale: 1.05 }}>
-            <Link href="https://www.youtube.com/@LearnAIAutomation" className="block rounded-full bg-white px-6 py-3 font-semibold text-indigo-600 shadow-md">
-              Youtube
-            </Link>
-          </motion.div>
-          <motion.div whileHover={{ scale: 1.05 }}>
-            <Link href="https://rumjahn.substack.com/" className="block rounded-full bg-white px-6 py-3 font-semibold text-indigo-600 shadow-md">
-              Join my newsletter
-            </Link>
-          </motion.div>
-          <motion.div whileHover={{ scale: 1.05 }}>
-            <Link href="https://rumjahn.com" className="block rounded-full bg-white px-6 py-3 font-semibold text-indigo-600 shadow-md">
-              My blog
-            </Link>
-          </motion.div>
-        </motion.div>
-
-        <motion.div className="mt-8" variants={itemVariants}>
-          <h2 className="text-xl font-semibold text-gray-800">Resources</h2>
-          <div className="mt-4 space-y-4">
-            <motion.div whileHover={{ scale: 1.05 }}>
-              <Link href="https://nas.io/rumjahn/challenges/master-vibe-coding-in-14-days-and-make-money-with-a-i-cohort-4-copy" className="block rounded-xl bg-white p-4 text-left shadow-md">
-                <div className="flex items-start gap-4">
-                  <Image
-                    src="/ai-course.png"
-                    alt="A.I. Coding Automation Course"
-                    width={64}
-                    height={64}
-                    className="rounded-lg bg-gray-200"
-                  />
-                  <div className="flex-grow">
-                    <h3 className="font-semibold text-gray-900">Learn A.I. coding</h3>
-                    <p className="text-sm text-gray-600">Learn to build an app that makes money</p>
-                  </div>
-                </div>
-                <div className="mt-4 rounded-full bg-indigo-600 px-4 py-2 text-center text-sm font-semibold text-white">
-                  Enroll Now
-                </div>
-              </Link>
-            </motion.div>
+          <div className="relative mb-6">
+            <div className="absolute inset-0 rounded-full bg-brand blur-md opacity-20 transform translate-y-2"></div>
+            <Image
+              src="/keith.jpg"
+              alt="Profile"
+              width={140}
+              height={140}
+              className="relative h-32 w-32 rounded-full border-4 border-white shadow-xl object-cover"
+              priority
+            />
           </div>
-        </motion.div>
-        
-        <motion.div className="mt-8" variants={itemVariants}>
-          <h2 className="text-xl font-semibold text-gray-800">My Products</h2>
-          <div className="mt-4 space-y-4">
-            <motion.div whileHover={{ scale: 1.05 }}>
-              <Link href="https://applehealthdata.com/" className="block rounded-xl bg-white p-4 text-left shadow-md">
-                <div className="flex items-start gap-4">
-                  <Image
-                    src="/appicon.png"
-                    alt="Apple Health Data icon"
-                    width={64}
-                    height={64}
-                    className="rounded-lg bg-gray-200"
-                  />
-                  <div className="flex-grow">
-                                      <h3 className="font-semibold text-gray-900">Health Data A.I. analyzer</h3>
-                                      <p className="text-sm text-gray-600">Use A.I. to unlock insights</p>                  </div>
-                </div>
-                <div className="mt-4 rounded-full bg-indigo-600 px-4 py-2 text-center text-sm font-semibold text-white">
-                  Download
-                </div>
-              </Link>
-            </motion.div>
-            <motion.div whileHover={{ scale: 1.05 }}>
-              <Link href="https://seo.rumjahn.com/" className="block rounded-xl bg-white p-4 text-left shadow-md">
-                <div className="flex items-start gap-4">
-                  <Image
-                    src="/Gemini_Generated_Image_1fbvfd1fbvfd1fbv.png"
-                    alt="n8n A.I. system icon"
-                    width={64}
-                    height={64}
-                    className="h-16 w-16 flex-shrink-0 rounded-lg bg-gray-200 object-cover"
-                  />
-                  <div className="flex-grow">
-                    <h3 className="font-semibold text-gray-900">n8n SEO A.I. System</h3>
-                    <p className="text-sm text-gray-600">n8n SEO A.I. System</p>
-                  </div>
-                </div>
-                <div className="mt-4 rounded-full bg-indigo-600 px-4 py-2 text-center text-sm font-semibold text-white">
-                  Buy Now
-                </div>
-              </Link>
-            </motion.div>
+          
+          <h1 className="text-3xl font-bold tracking-tight text-gray-900 mb-2">Keith Rumjahn</h1>
+          <p className="text-gray-600 max-w-sm text-lg">
+            I talk about A.I. to improve your life. Top 50 verified n8n creator globally 🌍
+          </p>
+
+          <div className="mt-6 flex gap-4">
+             <Link href="https://www.youtube.com/@LearnAIAutomation" className="text-gray-400 hover:text-brand transition-colors">
+               <Youtube className="h-6 w-6" />
+             </Link>
+             <Link href="https://www.instagram.com/krumjahn/" className="text-gray-400 hover:text-brand transition-colors">
+               <Instagram className="h-6 w-6" />
+             </Link>
+             <Link href="https://www.linkedin.com/in/krumjahn/" className="text-gray-400 hover:text-brand transition-colors">
+               <Linkedin className="h-6 w-6" />
+             </Link>
+             <Link href="https://www.threads.net/@krumjahn" className="text-gray-400 hover:text-brand transition-colors">
+               <Twitter className="h-6 w-6" />
+             </Link>
           </div>
         </motion.div>
 
-        <motion.div className="mt-8 flex justify-center gap-6" variants={itemVariants}>
-          <Link href="https://www.threads.net/@krumjahn" className="text-gray-500 transition-transform hover:scale-110 hover:text-indigo-600">
-            <Twitter size={24} />
-          </Link>
+        {/* Links Section - Styled as Product Cards */}
+        <div className="space-y-6">
+          <motion.h2 className="text-xl font-bold text-gray-900 mb-4" variants={itemVariants}>Quick Links</motion.h2>
           
-          <Link href="https://www.youtube.com/@LearnAIAutomation" className="text-gray-500 transition-transform hover:scale-110 hover:text-indigo-600">
-            <Youtube size={24} />
-          </Link>
+          {links.map((link, index) => (
+            <motion.div key={index} variants={itemVariants} whileHover={{ y: -2 }} className="group">
+              <Link href={link.url} target="_blank" className="block bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300">
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-4">
+                    <div className="bg-gray-50 p-2 rounded-lg group-hover:bg-brand/10 transition-colors">
+                       {/* Using a generic icon if svg not ideal, but keeping consistent structure */}
+                       <ExternalLink className="h-6 w-6 text-gray-600 group-hover:text-brand" />
+                    </div>
+                    <span className="font-semibold text-gray-900">{link.title}</span>
+                  </div>
+                  <div className="hidden sm:block px-4 py-2 bg-brand text-white text-sm font-semibold rounded-full opacity-0 group-hover:opacity-100 transition-opacity transform translate-x-2 group-hover:translate-x-0">
+                    {link.btnText}
+                  </div>
+                  <ArrowRight className="sm:hidden h-5 w-5 text-gray-400 group-hover:text-brand" />
+                </div>
+              </Link>
+            </motion.div>
+          ))}
+
+          <motion.h2 className="text-xl font-bold text-gray-900 mt-12 mb-4" variants={itemVariants}>Featured Products</motion.h2>
           
-          <Link href="https://www.instagram.com/krumjahn/" className="text-gray-500 transition-transform hover:scale-110 hover:text-indigo-600">
-            <Instagram size={24} />
-          </Link>
-          
-          <Link href="https://www.linkedin.com/in/krumjahn/" className="text-gray-500 transition-transform hover:scale-110 hover:text-indigo-600">
-            <Linkedin size={24} />
-          </Link>
+          {products.map((product, index) => (
+            <motion.div key={index} variants={itemVariants} whileHover={{ y: -2 }} className="group">
+              <Link href={product.url} target="_blank" className="block bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-5">
+                  <div className="flex-shrink-0">
+                    <Image
+                      src={product.image}
+                      alt={product.title}
+                      width={80}
+                      height={80}
+                      className="rounded-lg object-cover bg-gray-100"
+                    />
+                  </div>
+                  <div className="flex-grow">
+                    <h3 className="font-bold text-gray-900 text-lg group-hover:text-brand transition-colors">{product.title}</h3>
+                    <p className="text-gray-500 text-sm mt-1">{product.description}</p>
+                  </div>
+                  <div className="mt-4 sm:mt-0 flex-shrink-0">
+                    <span className="inline-block w-full sm:w-auto text-center px-5 py-2.5 bg-gray-50 text-gray-700 font-semibold rounded-lg group-hover:bg-brand group-hover:text-white transition-all duration-300">
+                      {product.btnText}
+                    </span>
+                  </div>
+                </div>
+              </Link>
+            </motion.div>
+          ))}
+        </div>
+        
+        <motion.div className="mt-16 text-center text-sm text-gray-400" variants={itemVariants}>
+          <p>© {new Date().getFullYear()} Keith Rumjahn. All rights reserved.</p>
         </motion.div>
       </motion.div>
     </main>
