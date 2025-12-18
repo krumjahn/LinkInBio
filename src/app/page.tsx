@@ -37,9 +37,9 @@ export default function Home() {
 
   const products = [
     {
-      title: "Learn A.I. coding",
-      description: "Learn to build an app that makes money",
-      image: "/ai-course.png",
+      title: "Join FREE A.I. Course",
+      description: "Stop Watching AI Content.\nStart Getting Better At Using It.",
+      image: "/course-hero.jpg",
       url: "https://nas.io/rumjahn/challenges/master-vibe-coding-in-14-days-and-make-money-with-a-i-cohort-4-copy",
       btnText: "Enroll Now"
     },
@@ -125,26 +125,52 @@ export default function Home() {
           {products.map((product, index) => (
             <div key={index} className="group transition-transform hover:-translate-y-0.5">
               <Link href={product.url} target="_blank" className="block bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300">
-                <div className="flex flex-col sm:flex-row sm:items-center gap-5">
-                  <div className="flex-shrink-0">
-                    <Image
-                      src={product.image}
-                      alt={product.title}
-                      width={80}
-                      height={80}
-                      className="rounded-lg object-cover bg-gray-100"
-                    />
+                {index === 0 ? (
+                  <div className="flex flex-col gap-4">
+                    <div className="w-full">
+                      <Image
+                        src={product.image}
+                        alt={product.title}
+                        width={1600}
+                        height={900}
+                        className="w-full h-auto rounded-xl object-cover bg-gray-100"
+                        priority
+                      />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-gray-900 text-xl leading-snug group-hover:text-brand transition-colors">{product.title}</h3>
+                      <p className="text-gray-600 mt-2 whitespace-pre-line">
+                        {product.description}
+                      </p>
+                    </div>
+                    <div className="mt-1">
+                      <span className="inline-block w-full text-center px-5 py-3 bg-gray-50 text-gray-700 font-semibold rounded-lg group-hover:bg-brand group-hover:text-white transition-all duration-300">
+                        {product.btnText}
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex-grow">
-                    <h3 className="font-bold text-gray-900 text-lg group-hover:text-brand transition-colors">{product.title}</h3>
-                    <p className="text-gray-500 text-sm mt-1">{product.description}</p>
+                ) : (
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-5">
+                    <div className="flex-shrink-0">
+                      <Image
+                        src={product.image}
+                        alt={product.title}
+                        width={80}
+                        height={80}
+                        className="rounded-lg object-cover bg-gray-100"
+                      />
+                    </div>
+                    <div className="flex-grow">
+                      <h3 className="font-bold text-gray-900 text-lg group-hover:text-brand transition-colors">{product.title}</h3>
+                      <p className="text-gray-500 text-sm mt-1">{product.description}</p>
+                    </div>
+                    <div className="mt-4 sm:mt-0 flex-shrink-0">
+                      <span className="inline-block w-full sm:w-auto text-center px-5 py-2.5 bg-gray-50 text-gray-700 font-semibold rounded-lg group-hover:bg-brand group-hover:text-white transition-all duration-300">
+                        {product.btnText}
+                      </span>
+                    </div>
                   </div>
-                  <div className="mt-4 sm:mt-0 flex-shrink-0">
-                    <span className="inline-block w-full sm:w-auto text-center px-5 py-2.5 bg-gray-50 text-gray-700 font-semibold rounded-lg group-hover:bg-brand group-hover:text-white transition-all duration-300">
-                      {product.btnText}
-                    </span>
-                  </div>
-                </div>
+                )}
               </Link>
             </div>
           ))}
