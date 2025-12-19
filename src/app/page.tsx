@@ -39,7 +39,7 @@ export default function Home() {
     {
       title: "Join FREE A.I. Course",
       description: "Stop Watching AI Content.\nStart Getting Better At Using It.",
-      image: "/Gemini_Generated_Image_3rk2do3rk2do3rk2.png",
+      image: "/freeCourse.jpg",
       url: "https://nas.io/rumjahn/challenges/master-vibe-coding-in-14-days-and-make-money-with-a-i-cohort-4-copy",
       btnText: "Enroll Now"
     },
