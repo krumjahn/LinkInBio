@@ -135,6 +135,7 @@ export default function Home() {
                         height={900}
                         className="w-full h-auto rounded-xl object-cover bg-gray-100"
                         priority
+                        unoptimized
                       />
                     </div>
                     <div>
