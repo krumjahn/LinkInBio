@@ -10,7 +10,8 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "thumb": "node scripts/generate-thumbnail.js public/keith.jpg public/thumbnail.png"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.1.2",
@@ -32,6 +33,7 @@
     "eslint": "^9",
     "eslint-config-next": "^15.1.11",
     "postcss": "^8",
+    "sharp": "^0.34.5",
     "tailwindcss": "^3.4.1",
     "tsx": "^4.19.3",
     "typescript": "^5"
