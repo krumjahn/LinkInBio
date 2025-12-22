@@ -53,7 +53,7 @@ export default function Home() {
     {
       title: "n8n SEO A.I. System",
       description: "Automate your SEO workflow",
-      image: "/Gemini_Generated_Image_1fbvfd1fbvfd1fbv.png",
+      image: "/Gemini_Generated_Image_pn0lexpn0lexpn0l.png",
       url: "https://seo.rumjahn.com/",
       btnText: "Buy Now"
     }
