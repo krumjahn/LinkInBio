@@ -8,8 +8,8 @@ export default function Home() {
     {
       title: "Join my community",
       icon: "/globe.svg",
-      url: "https://nas.io/rumjahn",
-      btnText: "Join Now",
+      url: "https://rumjahn.substack.com/",
+      btnText: "Subscribe",
       description: ""
     },
     {
@@ -17,13 +17,6 @@ export default function Home() {
       icon: "/window.svg",
       url: "https://www.youtube.com/@LearnAIAutomation",
       btnText: "Watch",
-      description: ""
-    },
-    {
-      title: "My Newsletter",
-      icon: "/file.svg",
-      url: "https://rumjahn.substack.com/",
-      btnText: "Subscribe",
       description: ""
     },
     {
