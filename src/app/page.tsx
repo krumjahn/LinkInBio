@@ -34,7 +34,16 @@ export default function Home() {
       description: "Stop Watching AI Content.\nStart Getting Better At Using It.",
       image: "/7dayPrompting.png",
       url: "https://www.udemy.com/course/chatgpt-ai-mastery-from-beginner-to-power-user-in-5-days/?referralCode=C62F68452CDB0C7B922C",
-      btnText: "Enroll Now"
+      btnText: "Enroll Now",
+      featured: true
+    },
+    {
+      title: "Master A.I. Vibe Coding",
+      description: "Build apps faster with A.I.\nGo from idea to working product.",
+      image: "/14dayVibeCoding.png",
+      url: "https://www.udemy.com/course/master-ai-vibe-coding-in-7-days/?referralCode=8B887D6C60DC678AFCB8",
+      btnText: "Enroll Now",
+      featured: true
     },
     {
       title: "Health Data A.I. analyzer",
@@ -118,7 +127,7 @@ export default function Home() {
           {products.map((product, index) => (
             <div key={index} className="group transition-transform hover:-translate-y-0.5">
               <Link href={product.url} target="_blank" className="block bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300">
-                {index === 0 ? (
+                {product.featured ? (
                   <div className="flex flex-col gap-4">
                     <div className="w-full">
                       <Image
