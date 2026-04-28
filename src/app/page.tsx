@@ -32,8 +32,8 @@ export default function Home() {
     {
       title: "Join FREE A.I. Course",
       description: "Stop Watching AI Content.\nStart Getting Better At Using It.",
-      image: "/freeCourse.jpg",
-      url: "https://nas.io/rumjahn/challenges/master-vibe-coding-in-14-days-and-make-money-with-a-i-cohort-4-copy",
+      image: "/7dayPrompting.png",
+      url: "https://www.udemy.com/course/chatgpt-ai-mastery-from-beginner-to-power-user-in-5-days/?referralCode=C62F68452CDB0C7B922C",
       btnText: "Enroll Now"
     },
     {
