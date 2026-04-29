@@ -46,6 +46,14 @@ export default function Home() {
       featured: true
     },
     {
+      title: "Master n8n in 7 Days",
+      description: "Automate workflows with n8n.\nBuild practical A.I. automations.",
+      image: "/n8ncourseUdemy.png",
+      url: "https://www.udemy.com/course/master-n8n-in-7-days/?referralCode=22315D07E6C12DAE3B3F",
+      btnText: "Enroll Now",
+      featured: true
+    },
+    {
       title: "Health Data A.I. analyzer",
       description: "Use A.I. to unlock insights",
       image: "/appicon.png",
