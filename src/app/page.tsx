@@ -30,7 +30,7 @@ export default function Home() {
 
   const products = [
     {
-      title: "Join FREE A.I. Course",
+      title: "Master A.I. prompting in 5 days",
       description: "Stop Watching AI Content.\nStart Getting Better At Using It.",
       image: "/7dayPrompting.png",
       url: "https://www.udemy.com/course/chatgpt-ai-mastery-from-beginner-to-power-user-in-5-days/?referralCode=C62F68452CDB0C7B922C",
