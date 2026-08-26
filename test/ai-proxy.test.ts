@@ -33,6 +33,27 @@ test("routes paid OpenAI requests through configured OpenRouter model", async ()
   assert.equal((calls[1].options?.headers as Record<string,string>).Authorization, "Bearer test-openrouter");
 });
 
+test("uses current built-in models when Railway overrides are absent", async () => {
+  const openAIOverride = process.env.OPENROUTER_OPENAI_MODEL;
+  const anthropicOverride = process.env.OPENROUTER_ANTHROPIC_MODEL;
+  delete process.env.OPENROUTER_OPENAI_MODEL;
+  delete process.env.OPENROUTER_ANTHROPIC_MODEL;
+  try {
+    const models: string[] = [];
+    const fetchImpl = async (input: URL | RequestInfo, options?: RequestInit) => {
+      if (input.toString().includes("revenuecat")) return json(200, { subscriber: { entitlements: { Pro: { expires_date: null } } } });
+      models.push(JSON.parse(options?.body as string).model);
+      return json(200, { choices: [{ message: { content: "Useful analysis" } }] });
+    };
+    assert.equal((await handleAnalysis(request("default-openai"), { now, fetchImpl })).status, 200);
+    assert.equal((await handleAnalysis(request("default-anthropic", "anthropic"), { now, fetchImpl })).status, 200);
+    assert.deepEqual(models, ["openai/gpt-5.6-sol", "anthropic/claude-opus-5"]);
+  } finally {
+    process.env.OPENROUTER_OPENAI_MODEL = openAIOverride;
+    process.env.OPENROUTER_ANTHROPIC_MODEL = anthropicOverride;
+  }
+});
+
 test("does not expose provider errors", async () => {
   const result = await handleAnalysis(request("other-user", "anthropic"), { now, fetchImpl: async input => input.toString().includes("revenuecat") ? json(200, { subscriber: { entitlements: { Pro: { expires_date: null } } } }) : json(402, { error: { message: "secret detail" } }) });
   assert.equal(result.status, 502);

@@ -130,8 +130,8 @@ This same Next.js service exposes `POST /v1/ai-analysis` and `GET /health`. Conf
 
 - `OPENROUTER_API_KEY`
 - `REVENUECAT_SECRET_API_KEY`
-- `OPENROUTER_OPENAI_MODEL`
-- `OPENROUTER_ANTHROPIC_MODEL`
 - `REVENUECAT_ENTITLEMENT_ID` (defaults to `Pro`)
+
+The app defaults to `openai/gpt-5.6-sol` and `anthropic/claude-opus-5`. The optional `OPENROUTER_OPENAI_MODEL` and `OPENROUTER_ANTHROPIC_MODEL` variables can override those defaults without a code release.
 
 Never commit secret values. The API checks the RevenueCat entitlement and forwards aggregate health summaries without storing request bodies.

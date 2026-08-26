@@ -1,4 +1,4 @@
-import { Instagram, Linkedin, Twitter, Youtube, ArrowRight, ExternalLink } from 'lucide-react'
+import { Instagram, Linkedin, Twitter, Youtube, ArrowRight, ExternalLink, Sparkles, Users, Zap } from 'lucide-react'
 
 import Image from "next/image"
 import Link from "next/link"
@@ -32,17 +32,17 @@ export default function Home() {
     {
       title: "Keith AI — Free Community",
       description: "Learn AI from zero with free videos, agent resources, and a curated AI resource vault.",
-      image: "/freeCourse.jpg",
       url: "https://www.skool.com/keith-ai-3958",
       btnText: "Join Free",
+      community: "free" as const,
       featured: true
     },
     {
       title: "Keith AI — Paid Community",
       description: "Go deeper with practical AI systems, courses, and support for building with AI.",
-      image: "/ai-course.png",
       url: "https://www.skool.com/keith-ai-2326",
       btnText: "View Community",
+      community: "paid" as const,
       featured: true
     },
     {
@@ -129,16 +129,29 @@ export default function Home() {
               <Link href={product.url} target="_blank" className="block bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300">
                 {product.featured ? (
                   <div className="flex flex-col gap-4">
-                    <div className="w-full">
-                      <Image
-                        src={product.image}
-                        alt={product.title}
-                        width={1600}
-                        height={900}
-                        className="w-full h-auto rounded-xl object-cover bg-gray-100"
-                        priority
-                        unoptimized
-                      />
+                    <div
+                      className={`relative flex h-52 w-full overflow-hidden rounded-xl p-6 text-white ${
+                        product.community === "free"
+                          ? "bg-gradient-to-br from-sky-600 via-blue-600 to-indigo-700"
+                          : "bg-gradient-to-br from-violet-700 via-fuchsia-700 to-rose-600"
+                      }`}
+                    >
+                      <div className="absolute -right-12 -top-16 h-52 w-52 rounded-full bg-white/15 blur-2xl" />
+                      <div className="absolute -bottom-20 -left-12 h-44 w-44 rounded-full bg-black/15 blur-2xl" />
+                      <div className="relative z-10 flex w-full flex-col justify-between">
+                        <div className="flex items-center justify-between">
+                          <span className="rounded-full border border-white/25 bg-white/15 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] backdrop-blur-sm">
+                            Keith AI
+                          </span>
+                          {product.community === "free" ? <Users className="h-7 w-7" /> : <Zap className="h-7 w-7" />}
+                        </div>
+                        <div>
+                          <Sparkles className="mb-3 h-8 w-8" />
+                          <p className="max-w-md text-3xl font-black leading-tight tracking-tight sm:text-4xl">
+                            {product.community === "free" ? "Learn AI. Build together." : "Turn AI skills into systems."}
+                          </p>
+                        </div>
+                      </div>
                     </div>
                     <div>
                       <h3 className="font-bold text-gray-900 text-xl leading-snug group-hover:text-brand transition-colors">{product.title}</h3>
@@ -156,7 +169,7 @@ export default function Home() {
                   <div className="flex flex-col sm:flex-row sm:items-center gap-5">
                     <div className="flex-shrink-0">
                       <Image
-                        src={product.image}
+                        src={product.image!}
                         alt={product.title}
                         width={80}
                         height={80}
