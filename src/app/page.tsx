@@ -99,6 +99,30 @@ export default function Home() {
           </div>
         </div>
 
+        {/* Primary feature: upcoming book */}
+        <Link
+          href="https://rumjahn.com/book"
+          className="group mb-12 grid overflow-hidden rounded-3xl bg-[#1d1e1a] shadow-xl transition-transform hover:-translate-y-1 sm:grid-cols-[0.8fr_1.2fr]"
+        >
+          <div className="relative flex min-h-[360px] items-center justify-center bg-gradient-to-br from-[#eee6d8] via-[#d8c7ae] to-[#a54d38] p-8">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_15%,rgba(255,255,255,.7),transparent_40%)]" />
+            <Image
+              src="/the-38x-company-book-cover.png"
+              alt="The 38X Company book cover"
+              width={992}
+              height={1586}
+              priority
+              className="relative h-auto w-48 rotate-1 shadow-2xl transition-transform duration-300 group-hover:scale-[1.03] sm:w-52"
+            />
+          </div>
+          <div className="flex flex-col justify-center p-8 text-white sm:p-10">
+            <span className="mb-4 text-xs font-bold uppercase tracking-[0.2em] text-[#d98269]">My upcoming book</span>
+            <h2 className="text-3xl font-black leading-tight tracking-tight sm:text-4xl">Build an AI company that gets 1% better every day.</h2>
+            <p className="mt-4 leading-relaxed text-white/70">The practical guide to building AI workers that learn, coordinate, and keep your business moving while you&apos;re away.</p>
+            <span className="mt-7 inline-flex items-center gap-2 font-bold text-white">Join the early-reader list <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" /></span>
+          </div>
+        </Link>
+
         {/* Links Section - Styled as Product Cards */}
         <div className="space-y-6">
           <h2 className="text-xl font-bold text-gray-900 mb-4">Quick Links</h2>
