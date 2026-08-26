@@ -123,3 +123,15 @@ To learn more about Next.js, take a look at the following resources:
 4. Deploy your application
 
 Railway simplifies your infrastructure stack with a single, scalable, easy-to-use platform, allowing you to focus on building your application rather than managing infrastructure.
+
+## Health analyzer API (Railway)
+
+This same Next.js service exposes `POST /v1/ai-analysis` and `GET /health`. Configure these private Railway variables:
+
+- `OPENROUTER_API_KEY`
+- `REVENUECAT_SECRET_API_KEY`
+- `OPENROUTER_OPENAI_MODEL`
+- `OPENROUTER_ANTHROPIC_MODEL`
+- `REVENUECAT_ENTITLEMENT_ID` (defaults to `Pro`)
+
+Never commit secret values. The API checks the RevenueCat entitlement and forwards aggregate health summaries without storing request bodies.

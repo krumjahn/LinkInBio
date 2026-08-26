@@ -30,27 +30,19 @@ export default function Home() {
 
   const products = [
     {
-      title: "Master A.I. prompting in 5 days",
-      description: "Stop Watching AI Content.\nStart Getting Better At Using It.",
-      image: "/7dayPrompting.png",
-      url: "https://www.udemy.com/course/chatgpt-ai-mastery-from-beginner-to-power-user-in-5-days/?referralCode=C62F68452CDB0C7B922C",
-      btnText: "Enroll Now",
+      title: "Keith AI — Free Community",
+      description: "Learn AI from zero with free videos, agent resources, and a curated AI resource vault.",
+      image: "/freeCourse.jpg",
+      url: "https://www.skool.com/keith-ai-3958",
+      btnText: "Join Free",
       featured: true
     },
     {
-      title: "Master A.I. Vibe Coding",
-      description: "Build apps faster with A.I.\nGo from idea to working product.",
-      image: "/14dayVibeCoding.png",
-      url: "https://www.udemy.com/course/master-ai-vibe-coding-in-7-days/?referralCode=8B887D6C60DC678AFCB8",
-      btnText: "Enroll Now",
-      featured: true
-    },
-    {
-      title: "Master n8n in 7 Days",
-      description: "Automate workflows with n8n.\nBuild practical A.I. automations.",
-      image: "/n8ncourseUdemy.png",
-      url: "https://www.udemy.com/course/master-n8n-in-7-days/?referralCode=22315D07E6C12DAE3B3F",
-      btnText: "Enroll Now",
+      title: "Keith AI — Paid Community",
+      description: "Go deeper with practical AI systems, courses, and support for building with AI.",
+      image: "/ai-course.png",
+      url: "https://www.skool.com/keith-ai-2326",
+      btnText: "View Community",
       featured: true
     },
     {
