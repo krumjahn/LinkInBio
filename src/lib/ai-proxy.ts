@@ -1,7 +1,9 @@
 function models() {
   return {
-    openai: process.env.OPENROUTER_OPENAI_MODEL || "",
-    anthropic: process.env.OPENROUTER_ANTHROPIC_MODEL || "",
+    // Pin known-good defaults in code so Railway only needs the two secret keys.
+    // These can still be overridden without a release if a provider deprecates one.
+    openai: process.env.OPENROUTER_OPENAI_MODEL || "openai/gpt-5.6-sol",
+    anthropic: process.env.OPENROUTER_ANTHROPIC_MODEL || "anthropic/claude-opus-5",
   } as const;
 }
 const requests = new Map<string, { startedAt: number; count: number }>();
