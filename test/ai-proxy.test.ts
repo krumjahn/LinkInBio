@@ -25,7 +25,7 @@ test("routes paid OpenAI requests through configured OpenRouter model", async ()
   const result = await handleAnalysis(request("paid-user"), { now, fetchImpl: async (input, options) => {
     const url = input.toString(); calls.push({ url, options });
     if (url.includes("revenuecat")) return json(200, { subscriber: { entitlements: { Pro: { expires_date: "2026-09-26T00:00:00Z" } } } });
-    return json(200, { choices: [{ message: { content: "Useful analysis" } }] });
+    return json(200, { choices: [{ finish_reason: "stop", message: { content: "Useful analysis" } }] });
   }});
   assert.equal(result.status, 200);
   const upstream = JSON.parse(calls[1].options?.body as string);
@@ -43,7 +43,7 @@ test("uses current built-in models when Railway overrides are absent", async () 
     const fetchImpl = async (input: URL | RequestInfo, options?: RequestInit) => {
       if (input.toString().includes("revenuecat")) return json(200, { subscriber: { entitlements: { Pro: { expires_date: null } } } });
       models.push(JSON.parse(options?.body as string).model);
-      return json(200, { choices: [{ message: { content: "Useful analysis" } }] });
+      return json(200, { choices: [{ finish_reason: "stop", message: { content: "Useful analysis" } }] });
     };
     assert.equal((await handleAnalysis(request("default-openai"), { now, fetchImpl })).status, 200);
     assert.equal((await handleAnalysis(request("default-anthropic", "anthropic"), { now, fetchImpl })).status, 200);
