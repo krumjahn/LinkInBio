@@ -135,3 +135,46 @@ This same Next.js service exposes `POST /v1/ai-analysis` and `GET /health`. Conf
 The app defaults to `openai/gpt-5.6-sol` and `anthropic/claude-opus-5`. The optional `OPENROUTER_OPENAI_MODEL` and `OPENROUTER_ANTHROPIC_MODEL` variables can override those defaults without a code release.
 
 Never commit secret values. The API checks the RevenueCat entitlement and forwards aggregate health summaries without storing request bodies.
+
+### Versioned paid model selection
+
+`POST /v2/ai-analysis` adds `mode` (`everyday` or `deep`) and `expected_model`
+to the existing `provider`, `prompt`, and `health_summary` body. It returns
+`content` and the verified `model`. The server restricts routing to:
+
+| Provider | Everyday | Deep |
+| --- | --- | --- |
+| OpenAI | `openai/gpt-6.1-sol` | `openai/gpt-6-astra` |
+| Anthropic | `anthropic/claude-opus-5.5` | `anthropic/claude-fable-5.1` |
+
+Both routes verify the existing RevenueCat `Pro` entitlement on every request.
+Subscription service failures return 503 rather than incorrectly asking a paying
+customer to subscribe again. Incomplete or mismatched-model answers cannot count
+as success. No automatic provider fallback or retry is introduced. Budgets remain
+8,000 output tokens for OpenAI and 4,000 for Anthropic, including reasoning. The
+Anthropic input character limit is 120,000; oversized summaries get an error
+instead of silent truncation. Life Context is data, never instructions; missing
+dates cannot establish timing or causation.
+
+v1 keeps its older provider-only request/response shape and default model choices.
+The personal links page and `/health` are unchanged. macOS client coordination:
+https://github.com/krumjahn/MacHealthAnalyzer/pull/45
+
+Production was traced on 14 October 2026 from Cloudflare's DNS record to Railway:
+project `peaceful-peace`, service `App`, environment `production`, repository
+`krumjahn/LinkInBio`. Both `link.rumjahn.com` and `api.applehealthdata.com` use this
+service. The marketing website `applehealthdata.com` remains on GitHub Pages with
+its existing Cloudflare website Worker. Never deploy the standalone Node proxy
+from the Mac repository over this Next.js service: that would remove the links page.
+
+Before deployment, run `npm test`, `npm run build`, and `git diff --check`.
+After deployment, check the links page, `/health`, v1 compatibility, v2 rejection
+of missing/expired identity, and real paid requests using an owned active Pro
+account. A passing health check or mocked entitlement is not a paid journey test.
+Keep the app release blocked until the last check passes.
+
+The inherited subscriber-ID header is not cryptographic authentication. The
+per-process limiter is now keyed by identity, independent of client-supplied
+forwarding headers; use stronger identity binding and shared edge limits before
+increasing spend or scaling instances. Request bodies and identity headers must
+not be logged by the host or reverse proxy. Errors do not log upstream messages.
